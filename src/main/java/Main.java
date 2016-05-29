@@ -13,7 +13,7 @@ public class Main {
 
         try {
             Class.forName("org.postgresql.Driver");
-            System.out.println("PostgresSQL JDBC Driver Registered");
+            System.out.println("PostgresSQL JDBC Driver registered");
         } catch (ClassNotFoundException e) {
             System.out.println("Where is your PostgresSQL JDBC Driver? "
                             + "Include in your library path!");
@@ -36,25 +36,26 @@ public class Main {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         //insert
         try {
-            statement.executeUpdate("INSERT INTO sqlcmd user_profile (login, password)" +
-            "VALUE ('Vitaliy', 'Zlenko')");
+            statement = connection.createStatement();
+            statement.executeUpdate("INSERT INTO public.user (login, password)" +
+            "VALUES ('Vitaliy', 'Zlenko')");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         //select
         try {
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM user_profile WHERE id > 10");
+            resultSet = statement.executeQuery("SELECT * FROM public.user WHERE id > 10");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -73,7 +74,7 @@ public class Main {
         // update
         try {
             preparedStatement = connection.prepareStatement (
-                "UPDATE sqlcmd SET password = ? WHERE id > 3");
+                "UPDATE public.user SET password = ? WHERE id > 3");
                 String pass = "password_" + new Random().nextInt();
                 preparedStatement.setString(1, pass);
                 preparedStatement.executeUpdate();
@@ -82,11 +83,6 @@ public class Main {
         } finally {
             try {
                 preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -105,6 +101,12 @@ public class Main {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+        }
+
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
