@@ -40,7 +40,7 @@ public class Main {
         try {
             statement = connection.createStatement();
             statement.executeUpdate("INSERT INTO public.user (login, password)" +
-            "VALUES ('Vitaliy', 'Zlenko')");
+            "VALUES ('Vitaliy', 'pass')");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
