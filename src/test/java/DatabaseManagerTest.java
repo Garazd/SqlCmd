@@ -41,7 +41,7 @@ public abstract class DatabaseManagerTest {
 
         DataSet user = users[0];
         assertEquals("[name, password, id]", Arrays.toString(user.getNames()));
-        assertEquals("[Vitaliy, pass, 4]", Arrays.toString(user.getValue()));
+        assertEquals("[Vitaliy, pass, 4]", Arrays.toString(user.getValues()));
     }
 
     @Test
@@ -67,7 +67,7 @@ public abstract class DatabaseManagerTest {
 
         DataSet user = users[0];
         assertEquals("[name, password, id]", Arrays.toString(user.getNames()));
-        assertEquals("[Garazd, pass2, 4]", Arrays.toString(user.getValue()));
+        assertEquals("[Garazd, pass2, 4]", Arrays.toString(user.getValues()));
     }
 
     @Test
