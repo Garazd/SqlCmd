@@ -1,3 +1,5 @@
+package model;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,11 +9,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
-public class DatabaseManager {
+public class JDBCDatabaseManager implements DatabaseManager {
 
     private Connection connection;
 
-    public void create(DataSet input) {
+    @Override
+    public void create(String tableName, DataSet input) {
         Statement statement = null;
         try {
             statement = connection.createStatement();
@@ -19,7 +22,7 @@ public class DatabaseManager {
             String tableNames = getNameFormated(input, "%s,");
             String values = getValueFormated(input, "%s,");
 
-            statement.executeUpdate("INSERT INTO public.user (" + tableNames + ")" +
+            statement.executeUpdate("INSERT INTO public." + tableName + " (" + tableNames + ")" +
                 "VALUES (" + values + ")");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -32,6 +35,7 @@ public class DatabaseManager {
         }
     }
 
+    @Override
     public void update(String tableName, int id, DataSet newValue) {
         PreparedStatement preparedStatement = null;
         try {
@@ -42,7 +46,7 @@ public class DatabaseManager {
             System.out.println(sql);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
-            for (Object value : newValue.getValue()) {
+            for (Object value : newValue.getValues()) {
                 preparedStatement.setObject(index , value);
                 index++;
             }
@@ -59,6 +63,7 @@ public class DatabaseManager {
         }
     }
 
+    @Override
     public void clear(String tableName) {
         Statement statement = null;
         try {
@@ -75,13 +80,14 @@ public class DatabaseManager {
         }
     }
 
-    public String[] getTableName() {
+    @Override
+    public String[] getTableNames() {
         Statement statement = null;
         ResultSet resultSet = null;
         try {
             statement = connection.createStatement();
             resultSet = statement.executeQuery("SELECT table_name FROM information_schema.tables " +
-                "WHERE table_schema='public' AND table_type='base table'");
+                "WHERE table_schema='public' AND table_type = 'BASE TABLE'");
             String[] tables = new String[100];
             int index = 0;
             while (resultSet.next()) {
@@ -106,6 +112,7 @@ public class DatabaseManager {
         }
     }
 
+    @Override
     public DataSet[] getTableData(String tableName) {
         Statement statement = null;
         ResultSet resultSet = null;
@@ -141,7 +148,8 @@ public class DatabaseManager {
         }
     }
 
-    public void connect(String database, String user, String password) {
+    @Override
+    public void connect(String database, String userName, String password) {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
@@ -150,9 +158,9 @@ public class DatabaseManager {
         }
         try {
             connection = DriverManager.getConnection(
-                "jdbs:postgresql://localhost:5432/" + database, user, password);
+                "jdbs:postgresql://localhost:5432/" + database, userName, password);
         } catch (SQLException e) {
-            System.out.println(String.format("Cant get connection for database:%s user:%s", database, user));
+            System.out.println(String.format("Cant get connection for database:%s user:%s", database, userName));
             e.printStackTrace();
             connection = null;
         }
@@ -160,7 +168,7 @@ public class DatabaseManager {
 
     private static String getNameFormated(DataSet newValue, String format) {
         String string = "";
-        for (String name : newValue.getName()) {
+        for (String name : newValue.getNames()) {
             string += String.format(format, name);
         }
         string = string.substring(0, string.length() - 1);
@@ -169,7 +177,7 @@ public class DatabaseManager {
 
     private String getValueFormated(DataSet input, String format) {
         String values = "";
-        for (Object value : input.getValue()) {
+        for (Object value : input.getValues()) {
             values += String.format(format, value);
         }
         values = values.substring(0, values.length() - 1);
@@ -183,5 +191,37 @@ public class DatabaseManager {
         int size = resultSet.getInt(1);
         resultSet.close();
         return size;
+    }
+
+    @Override
+    public String[] getTableColumns(String tableName) {
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM information_schema.colomns " +
+                "WHERE table_schema = 'public' AND table_name = '" + tableName + "'");
+            String[] tables = new String[100];
+            int index = 0;
+            while (resultSet.next()) {
+                tables[index++] = resultSet.getString("column_name");
+            }
+            tables = Arrays.copyOf(tables, index, String[].class);
+            return tables;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new String[0];
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
