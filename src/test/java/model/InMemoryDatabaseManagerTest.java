@@ -1,8 +1,9 @@
-import model.DatabaseManager;
+package model;
 
 public class InMemoryDatabaseManagerTest extends DatabaseManagerTest {
+
     @Override
     public DatabaseManager getDatabaseManager() {
-        return new InMemoryDatabaseManagerTest();
+        return new InMemoryDatabaseManager();
     }
 }

@@ -1,6 +1,6 @@
+package model;
+
 import java.util.Arrays;
-import model.DataSet;
-import model.DatabaseManager;
 import org.junit.Before;
 import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
@@ -13,7 +13,7 @@ public abstract class DatabaseManagerTest {
 
     @Before
     public void setup() {
-        manager = new DatabaseManager();
+        manager = getDatabaseManager();
         manager.connect("sqlcmd", "postgres", "postgres");
     }
 

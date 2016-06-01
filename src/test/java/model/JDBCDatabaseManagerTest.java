@@ -1,8 +1,9 @@
-import model.DatabaseManager;
+package model;
 
 public class JDBCDatabaseManagerTest extends DatabaseManagerTest {
+
     @Override
     public DatabaseManager getDatabaseManager() {
-        return new JDBCDatabaseManagerTest();
+        return new JDBCDatabaseManager();
     }
 }
