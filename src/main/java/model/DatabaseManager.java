@@ -15,4 +15,6 @@ public interface DatabaseManager {
     void connect(String database, String userName, String password);
 
     String[] getTableColumns(String tableName);
+
+    boolean isConnected();
 }
