@@ -38,7 +38,7 @@ public class InMemoryDatabaseManager implements DatabaseManager {
 
     @Override
     public String[] getTableNames() {
-        return new String[] { TABLE_NAME };
+        return new String[] { TABLE_NAME, "test" };
     }
 
     @Override
@@ -55,7 +55,12 @@ public class InMemoryDatabaseManager implements DatabaseManager {
 
     @Override
     public String[] getTableColumns(String tableName) {
-        return new String[] {"name", "password", "id"};
+        return new String[] {"id", "name", "password"};
+    }
+
+    @Override
+    public boolean isConnected() {
+        return true;
     }
 
     private void validateTable(String tableName) {
