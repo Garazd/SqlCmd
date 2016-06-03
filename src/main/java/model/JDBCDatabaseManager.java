@@ -20,7 +20,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             statement = connection.createStatement();
 
             String tableNames = getNameFormated(input, "%s,");
-            String values = getValueFormated(input, "%s,");
+            String values = getValueFormated(input, "'%s',");
 
             statement.executeUpdate("INSERT INTO public." + tableName + " (" + tableNames + ")" +
                 "VALUES (" + values + ")");
@@ -39,11 +39,10 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public void update(String tableName, int id, DataSet newValue) {
         PreparedStatement preparedStatement = null;
         try {
-            String tableNames = getNameFormated(newValue, "%s,");
+            String tableNames = getNameFormated(newValue, "%s = ?,");
 
             String sql = "UPDATE public." + tableName + " SET " + tableNames +
                 " WHERE id = ?";
-            System.out.println(sql);
             preparedStatement = connection.prepareStatement(sql);
             int index = 1;
             for (Object value : newValue.getValues()) {
@@ -199,7 +198,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         ResultSet resultSet = null;
         try {
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM information_schema.colomns " +
+            resultSet = statement.executeQuery("SELECT * FROM information_schema.columns " +
                 "WHERE table_schema = 'public' AND table_name = '" + tableName + "'");
             String[] tables = new String[100];
             int index = 0;
@@ -223,5 +222,10 @@ public class JDBCDatabaseManager implements DatabaseManager {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public boolean isConnected() {
+        return connection != null;
     }
 }
