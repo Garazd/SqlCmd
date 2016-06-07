@@ -63,10 +63,6 @@ public class Main {
         } finally {
             try {
                 resultSet.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
                 statement.close();
             } catch (SQLException e) {
                 e.printStackTrace();
