@@ -17,7 +17,7 @@ public class Help implements Command {
 
     @Override
     public void process(String command) {
-        view.write("Current command:");
+        view.write("Existing command:");
 
         view.write("\tconnect|databaseName|userName|password");
         view.write("\t\tto connect to a database, which will work");
@@ -32,7 +32,7 @@ public class Help implements Command {
         view.write("\t\tto create a record in the table");
 
         view.write("\tfind|tableName");
-        view.write("for the contents of the tableName");
+        view.write("\t\tto get the contents of the table 'tableName'");
 
         view.write("\thelp");
         view.write("\t\tto display the list on the screen");

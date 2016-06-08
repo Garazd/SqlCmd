@@ -52,8 +52,8 @@ public class Find implements Command {
         for (String name : tableColmns) {
             result += name + "|";
         }
-        view.write("---------------------");
+        view.write("--------------------");
         view.write(result);
-        view.write("---------------------");
+        view.write("--------------------");
     }
 }

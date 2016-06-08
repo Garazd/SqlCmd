@@ -23,9 +23,8 @@ public class Create implements Command {
     public void process(String command) {
         String[] data = command.split("\\|");
         if (data.length %2 != 0) {
-            throw new IllegalArgumentException(String.format("Must be even " +
-                "the number of parameters in a format " +
-                "'create|tableName|column1|value1|column2|value2|...|columnN|valueN'," +
+            throw new IllegalArgumentException(String.format("Must be an even number of parameters in a format " +
+                "'create|tableName|column1|value1|column2|value2|...|columnN|valueN', " +
                 "but you sent: '%s'", command));
         }
 
