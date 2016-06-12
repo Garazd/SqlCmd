@@ -15,10 +15,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void create(String tableName, DataSet input) {
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-
+        try (Statement statement = connection.createStatement())
+        {
             String tableNames = getNameFormated(input, "%s,");
             String values = getValueFormated(input, "'%s',");
 
@@ -26,24 +24,18 @@ public class JDBCDatabaseManager implements DatabaseManager {
                 "VALUES (" + values + ")");
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     @Override
     public void update(String tableName, int id, DataSet newValue) {
-        PreparedStatement preparedStatement = null;
-        try {
-            String tableNames = getNameFormated(newValue, "%s = ?,");
 
-            String sql = "UPDATE public." + tableName + " SET " + tableNames +
-                " WHERE id = ?";
-            preparedStatement = connection.prepareStatement(sql);
+        String tableNames = getNameFormated(newValue, "%s = ?,");
+        String sql = "UPDATE public." + tableName + " SET " + tableNames +
+            " WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql))
+        {
             int index = 1;
             for (Object value : newValue.getValues()) {
                 preparedStatement.setObject(index , value);
@@ -53,39 +45,24 @@ public class JDBCDatabaseManager implements DatabaseManager {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     @Override
     public void clear(String tableName) {
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement())
+        {
             statement.executeUpdate("DELETE FROM public." + tableName);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     @Override
     public String[] getTableNames() {
-        Statement statement = null;
-        ResultSet resultSet = null;
-        try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT table_name FROM information_schema.tables " +
+        try (Statement statement = connection.createStatement())
+        {
+            ResultSet resultSet = statement.executeQuery("SELECT table_name FROM information_schema.tables " +
                 "WHERE table_schema='public' AND table_type = 'BASE TABLE'");
             String[] tables = new String[100];
             int index = 0;
@@ -97,28 +74,15 @@ public class JDBCDatabaseManager implements DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
             return new String[0];
-        } finally {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     @Override
     public DataSet[] getTableData(String tableName) {
-        Statement statement = null;
-        ResultSet resultSet = null;
-        try {
+        try (Statement statement = connection.createStatement())
+        {
             int size = getSize(tableName);
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM public." + tableName);
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM public." + tableName);
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             DataSet[] result = new DataSet[size];
             int index = 0;
@@ -133,17 +97,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
             return new DataSet[0];
-        } finally {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -183,22 +136,24 @@ public class JDBCDatabaseManager implements DatabaseManager {
         return values;
     }
 
-    private int getSize(String tableName) throws SQLException {
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM public." + tableName);
-        resultSet.next();
-        int size = resultSet.getInt(1);
-        resultSet.close();
-        return size;
+    private int getSize(String tableName) {
+        try (Statement statement = connection.createStatement())
+        {
+            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM public." + tableName);
+            resultSet.next();
+            int size = resultSet.getInt(1);
+            return size;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     @Override
     public String[] getTableColumns(String tableName) {
-        Statement statement = null;
-        ResultSet resultSet = null;
-        try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM information_schema.columns " +
+        try (Statement statement = connection.createStatement())
+        {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM information_schema.columns " +
                 "WHERE table_schema = 'public' AND table_name = '" + tableName + "'");
             String[] tables = new String[100];
             int index = 0;
@@ -210,17 +165,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
             return new String[0];
-        } finally {
-            try {
-                resultSet.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
