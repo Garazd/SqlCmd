@@ -34,77 +34,49 @@ public class Main {
             return;
         }
 
-        Statement statement = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
         //insert
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement())
+        {
             statement.executeUpdate("INSERT INTO public.user (login, password)" +
             "VALUES ('Vitaliy', 'pass')");
-            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
         //select
-        try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM public.user WHERE id > 10");
+        try (Statement statement = connection.createStatement())
+        {
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM public.user WHERE id > 10");
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                resultSet.close();
-                statement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
         // update
-        try {
-            preparedStatement = connection.prepareStatement (
-                "UPDATE public.user SET password = ? WHERE id > 3");
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+            "UPDATE public.user SET password = ? WHERE id > 3"))
+        {
                 String pass = "password_" + new Random().nextInt();
                 preparedStatement.setString(1, pass);
                 preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
         // delete
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement())
+        {
             statement.executeUpdate("DELETE FROM public.user " +
                 "WHERE id > 10 AND id < 100");
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
+        }
+
+        if (connection != null) {
             try {
-                statement.close();
+                connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
-
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 }
