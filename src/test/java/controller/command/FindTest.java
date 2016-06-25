@@ -1,15 +1,22 @@
 package controller.command;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import model.DataSet;
+import model.DataSetImpl;
 import model.DatabaseManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import view.View;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class FindTest {
 
@@ -27,21 +34,19 @@ public class FindTest {
     @Test
     public void testPrintTableData() {
         //given
-        when(manager.getTableColumns("user"))
-            .thenReturn(new String[] {"id", "name", "password"});
+        setupTableColumns("user", "id", "name", "password");
 
-        DataSet user1 = new DataSet();
+        DataSet user1 = new DataSetImpl();
         user1.put("id", 12);
         user1.put("name", "Stiven");
         user1.put("password", "*****");
 
-        DataSet user2 = new DataSet();
+        DataSet user2 = new DataSetImpl();
         user2.put("id", 13);
         user2.put("name", "Eva");
         user2.put("password", "+++++");
 
-        DataSet[] data = new DataSet[] {user1, user2};
-        when(manager.getTableData("user")).thenReturn(data);
+        when(manager.getTableData("user")).thenReturn(Arrays.asList(user1, user2));
 
         //when
         command.process("find|user");
@@ -53,6 +58,11 @@ public class FindTest {
                     "|12|Stiven|*****|, " +
                     "|13|Eva|+++++|, " +
                     "--------------------]");
+    }
+
+    private void setupTableColumns(String tableName, String... columns) {
+        when(manager.getTableColumns(tableName))
+            .thenReturn(new LinkedHashSet<String>(Arrays.asList(columns)));
     }
 
     private void shouldPrint(String expected) {
@@ -97,10 +107,10 @@ public class FindTest {
     @Test
     public void testPrintEmptyTableData() {
         //given
-        when(manager.getTableColumns("user"))
-            .thenReturn(new String[] {"id", "name", "password"});
+        setupTableColumns("user", "id", "name", "password");
 
-        when(manager.getTableData("user")).thenReturn(new DataSet[0]);
+        when(manager.getTableData("user"))
+            .thenReturn(new ArrayList<DataSet>());
 
         //when
         command.process("find|user");
@@ -115,17 +125,16 @@ public class FindTest {
     @Test
     public void testPrintTableDataWithOneColumn() {
         //given
-        when(manager.getTableColumns("test"))
-            .thenReturn(new String[] {"id"});
+        setupTableColumns("test", "id");
 
-        DataSet user1 = new DataSet();
+        DataSet user1 = new DataSetImpl();
         user1.put("id", 12);
 
-        DataSet user2 = new DataSet();
+        DataSet user2 = new DataSetImpl();
         user2.put("id", 13);
 
-        DataSet[] data = new DataSet[] {user1, user2};
-        when(manager.getTableData("test")).thenReturn(data);
+        when(manager.getTableData("test")).
+            thenReturn(Arrays.asList(user1, user2));
 
         //when
         command.process("find|test");
