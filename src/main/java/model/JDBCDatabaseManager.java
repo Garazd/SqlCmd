@@ -7,7 +7,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 public class JDBCDatabaseManager implements DatabaseManager {
 
@@ -17,8 +20,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public void create(String tableName, DataSet input) {
         try (Statement statement = connection.createStatement())
         {
-            String tableNames = getNameFormated(input, "%s,");
-            String values = getValueFormated(input, "'%s',");
+            String tableNames = getNameFormatted(input, "%s,");
+            String values = getValueFormatted(input, "'%s',");
 
             statement.executeUpdate("INSERT INTO public." + tableName + " (" + tableNames + ")" +
                 "VALUES (" + values + ")");
@@ -28,9 +31,9 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void update(String tableName, int id, DataSet newValue) {
+    public void update(String tableName, int id, DataSetImpl newValue) {
 
-        String tableNames = getNameFormated(newValue, "%s = ?,");
+        String tableNames = getNameFormatted(newValue, "%s = ?,");
         String sql = "UPDATE public." + tableName + " SET " + tableNames +
             " WHERE id = ?";
 
@@ -59,44 +62,42 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public String[] getTableNames() {
-        try (Statement statement = connection.createStatement())
+    public Set<String> getTableNames() {
+        Set<String> tables = new LinkedHashSet<String>();
+        try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery
+            ("SELECT table_name FROM information_schema.tables " +
+            "WHERE table_schema='public' AND table_type = 'BASE TABLE'"))
         {
-            ResultSet resultSet = statement.executeQuery("SELECT table_name FROM information_schema.tables " +
-                "WHERE table_schema='public' AND table_type = 'BASE TABLE'");
-            String[] tables = new String[100];
-            int index = 0;
             while (resultSet.next()) {
-                tables[index++] = resultSet.getString("table_name");
+                tables.add(resultSet.getString("table_name"));
             }
-            tables = Arrays.copyOf(tables, index, String[].class);
             return tables;
         } catch (SQLException e) {
             e.printStackTrace();
-            return new String[0];
+            return tables;
         }
     }
 
     @Override
-    public DataSet[] getTableData(String tableName) {
-        try (Statement statement = connection.createStatement())
+    public List<DataSet> getTableData(String tableName) {
+        List<DataSet> result = new LinkedList<DataSet>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM public." + tableName))
         {
-            int size = getSize(tableName);
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM public." + tableName);
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-            DataSet[] result = new DataSet[size];
             int index = 0;
             while (resultSet.next()) {
-                DataSet dataSet = new DataSet();
-                result[index++] = dataSet;
-                for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                    dataSet.put(resultSetMetaData.getColumnName(i), resultSet.getObject(i));
+                DataSet dataSet = new DataSetImpl();
+                result.add(dataSet);
+                for (int i = 0; i < resultSetMetaData.getColumnCount(); i++) {
+                    dataSet.put(resultSetMetaData.getColumnName(i + 1), resultSet.getObject(i + 1));
                 }
             }
             return result;
         } catch (SQLException e) {
             e.printStackTrace();
-            return new DataSet[0];
+            return result;
         }
     }
 
@@ -118,7 +119,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
     }
 
-    private static String getNameFormated(DataSet newValue, String format) {
+    private static String getNameFormatted(DataSet newValue, String format) {
         String string = "";
         for (String name : newValue.getNames()) {
             string += String.format(format, name);
@@ -127,7 +128,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         return string;
     }
 
-    private String getValueFormated(DataSet input, String format) {
+    private String getValueFormatted(DataSet input, String format) {
         String values = "";
         for (Object value : input.getValues()) {
             values += String.format(format, value);
@@ -136,7 +137,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
         return values;
     }
 
-    private int getSize(String tableName) {
+    @Override
+    public int getSize(String tableName) {
         try (Statement statement = connection.createStatement())
         {
             ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM public." + tableName);
@@ -150,21 +152,20 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public String[] getTableColumns(String tableName) {
-        try (Statement statement = connection.createStatement())
+    public Set<String> getTableColumns(String tableName) {
+        Set<String> tables = new LinkedHashSet<String>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(
+                 "SELECT * FROM information_schema.columns " +
+                 "WHERE table_schema = 'public' AND table_name = '" + tableName + "'"))
         {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM information_schema.columns " +
-                "WHERE table_schema = 'public' AND table_name = '" + tableName + "'");
-            String[] tables = new String[100];
-            int index = 0;
             while (resultSet.next()) {
-                tables[index++] = resultSet.getString("column_name");
+                tables.add(resultSet.getString("column_name"));
             }
-            tables = Arrays.copyOf(tables, index, String[].class);
             return tables;
         } catch (SQLException e) {
             e.printStackTrace();
-            return new String[0];
+            return tables;
         }
     }
 
