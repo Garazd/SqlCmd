@@ -1,51 +1,43 @@
 package model;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class InMemoryDatabaseManager implements DatabaseManager {
 
-    public static final String TABLE_NAME = "user";
-
-    private DataSet[] data = new DataSet[1000];
-    private int freeIndex = 0;
+    private Map<String, List<DataSet>> tables = new LinkedHashMap<>();
 
     @Override
     public void create(String tableName, DataSet input) {
-        validateTable(tableName);
-
-        data[freeIndex] = input;
-        freeIndex++;
+        get(tableName).add(input);
     }
 
     @Override
-    public void update(String tableName, int id, DataSet newValue) {
-        validateTable(tableName);
-
-        for (int index = 0; index < freeIndex; index++) {
-            if ((int)data[index].get("id") == id) {
-                data[index].updateFrom(newValue);
+    public void update(String tableName, int id, DataSetImpl newValue) {
+        for (DataSet dataSet : get(tableName)) {
+            if ((int)dataSet.get("id") == id) {
+                dataSet.updateFrom(newValue);
             }
         }
     }
 
     @Override
     public void clear(String tableName) {
-        validateTable(tableName);
-
-        data = new DataSet[1000];
-        freeIndex = 0;
+        get(tableName).clear();
     }
 
     @Override
-    public String[] getTableNames() {
-        return new String[] { TABLE_NAME, "test" };
+    public Set<String> getTableNames() {
+        return tables.keySet();
     }
 
     @Override
-    public DataSet[] getTableData(String tableName) {
-        validateTable(tableName);
+    public List<DataSet> getTableData(String tableName) {
+        return get(tableName);
+    }
 
-        return Arrays.copyOf(data, freeIndex);
+    @Override
+    public int getSize(String tableName) {
+        return get(tableName).size();
     }
 
     @Override
@@ -54,8 +46,8 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public String[] getTableColumns(String tableName) {
-        return new String[] {"name", "password", "id"};
+    public Set<String> getTableColumns(String tableName) {
+        return new LinkedHashSet<String>(Arrays.asList("name", "password", "id"));
     }
 
     @Override
@@ -63,9 +55,10 @@ public class InMemoryDatabaseManager implements DatabaseManager {
         return true;
     }
 
-    private void validateTable(String tableName) {
-        if (!"user".equals(tableName)) {
-            throw new UnsupportedOperationException("\"Only for 'user' table, but you try to work with: " + tableName);
+    private List<DataSet> get(String tableName) {
+        if (!tables.containsKey(tableName)) {
+            tables.put(tableName, new LinkedList<DataSet>());
         }
+        return tables.get(tableName);
     }
 }
