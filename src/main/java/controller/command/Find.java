@@ -1,5 +1,7 @@
 package controller.command;
 
+import java.util.List;
+import java.util.Set;
 import model.DataSet;
 import model.DatabaseManager;
 import view.View;
@@ -24,14 +26,14 @@ public class Find implements Command {
         String[] data = command.split("\\|");
         String tableName = data[1];
 
-        String[] tableColumns = manager.getTableColumns(tableName);
+        Set<String> tableColumns = manager.getTableColumns(tableName);
         printHeader(tableColumns);
 
-        DataSet[] tableData = manager.getTableData(tableName);
+        List<DataSet> tableData = manager.getTableData(tableName);
         printTable(tableData);
     }
 
-    private void printTable(DataSet[] tableData) {
+    private void printTable(List<DataSet> tableData) {
         for (DataSet row : tableData) {
             printRow(row);
         }
@@ -39,7 +41,7 @@ public class Find implements Command {
     }
 
     private void printRow(DataSet row) {
-        Object[] values = row.getValues();
+        List<Object> values = row.getValues();
         String result = "|";
         for (Object value : values) {
             result += value + "|";
@@ -47,7 +49,7 @@ public class Find implements Command {
         view.write(result);
     }
 
-    private void printHeader(String[] tableColmns) {
+    private void printHeader(Set<String> tableColmns) {
         String result = "|";
         for (String name : tableColmns) {
             result += name + "|";
