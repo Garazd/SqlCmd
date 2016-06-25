@@ -1,20 +1,25 @@
 package model;
 
+import java.util.List;
+import java.util.Set;
+
 public interface DatabaseManager {
 
     void create(String tableName, DataSet input);
 
-    void update(String tableName, int id, DataSet newValue);
+    void update(String tableName, int id, DataSetImpl newValue);
 
     void clear(String tableName);
 
-    String[] getTableNames();
+    Set<String> getTableNames();
 
-    DataSet[] getTableData(String tableName);
+    List<DataSet> getTableData(String tableName);
+
+    int getSize(String tableName);
 
     void connect(String database, String userName, String password);
 
-    String[] getTableColumns(String tableName);
+    Set<String> getTableColumns(String tableName);
 
     boolean isConnected();
 }
