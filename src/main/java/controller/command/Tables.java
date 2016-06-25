@@ -1,15 +1,15 @@
 package controller.command;
 
-import java.util.Arrays;
+import java.util.Set;
 import model.DatabaseManager;
 import view.View;
 
-public class List implements Command {
+public class Tables implements Command {
 
     private DatabaseManager manager;
     private View view;
 
-    public List(DatabaseManager manager, View view) {
+    public Tables(DatabaseManager manager, View view) {
         this.manager = manager;
         this.view = view;
     }
@@ -21,9 +21,9 @@ public class List implements Command {
 
     @Override
     public void process(String command) {
-        String[] tableNames = manager.getTableNames();
+        Set<String> tableNames = manager.getTableNames();
 
-        String massage = Arrays.toString(tableNames);
+        String massage = tableNames.toString();
 
         view.write(massage);
     }
