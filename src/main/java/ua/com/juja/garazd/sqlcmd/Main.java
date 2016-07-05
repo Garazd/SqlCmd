@@ -1,5 +1,6 @@
-package ua.com.juja.garazd.sqlcmd.controller;
+package ua.com.juja.garazd.sqlcmd;
 
+import ua.com.juja.garazd.sqlcmd.controller.MainController;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.model.JDBCDatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.Concole;
