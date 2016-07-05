@@ -41,13 +41,13 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void connect(String database, String userName, String password) {
+    public void connect() {
         //do nothing
     }
 
     @Override
     public Set<String> getTableColumns(String tableName) {
-        return new LinkedHashSet<String>(Arrays.asList("name", "password", "id"));
+        return new LinkedHashSet<>(Arrays.asList("name", "password", "id"));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class InMemoryDatabaseManager implements DatabaseManager {
 
     private List<DataSet> get(String tableName) {
         if (!tables.containsKey(tableName)) {
-            tables.put(tableName, new LinkedList<DataSet>());
+            tables.put(tableName, new LinkedList<>());
         }
         return tables.get(tableName);
     }
