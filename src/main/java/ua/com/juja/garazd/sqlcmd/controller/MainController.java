@@ -6,16 +6,16 @@ import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class MainController {
 
-    private Command[] commands;
+    private DatabaseManager manager;
     private View view;
+    private Command[] commands;
 
-    public MainController(View view, DatabaseManager manager) {
+    public MainController(DatabaseManager manager, View view) {
         this.view = view;
-        this.commands = new Command[] {
-            new Connect(manager, view),
+        this.manager = manager;
+        this.commands = new Command[]{
             new Help(view),
             new Exit(view),
-            new IsConnected(manager, view),
             new Tables(manager, view),
             new Clear(manager, view),
             new Create(manager, view),
@@ -25,16 +25,42 @@ public class MainController {
     }
 
     public void run() {
-        try {
-            doWork();
-        } catch (ExitException e) {
-            //do nothing
+        if (!connectionDatabase()) {
+            return;
         }
+        doWork();
+    }
+
+    private boolean connectionDatabase() {
+        while (!manager.isConnected()) {
+            view.write("Enter the database name: ");
+            String databaseName = view.read();
+            view.write("Enter user name: ");
+            String userName = view.read();
+            view.write("Enter password: ");
+            String password = view.read();
+            try {
+                manager.connect(databaseName, userName, password);
+            } catch (Exception e) {
+                printError(e);
+            }
+            if (!manager.isConnected()) {
+                view.write("To retry? (y/n):");
+                String input = view.read();
+                if (!input.equals("y")) {
+                    view.write("See you later! Bye");
+                    return false;
+                }
+            }
+        }
+        view.write("Connecting to a database is successful");
+        return true;
     }
 
     private void doWork() {
         view.write("Hello user!");
-        view.write("Please enter a database name, username and password in the format: connect|database|userName|password");
+        view.write("Welcome to SQLCmd");
+        view.write("Enter command (or help for help):");
 
         while (true) {
             String input = view.read();
@@ -53,7 +79,6 @@ public class MainController {
                     break;
                 }
             }
-            view.write("Enter command (or help for help):");
         }
     }
 
