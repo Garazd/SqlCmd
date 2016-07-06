@@ -11,8 +11,36 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 
 public class JDBCDatabaseManager implements DatabaseManager {
+
+    @Override
+    public void connect(String dataBase, String userName, String password) {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Please add JDBC jar to project.");
+            e.printStackTrace();
+        }
+        try {
+            Configuration configuration = new Configuration();
+            String databaseUrl = String.format("%s%s:%s/%s",
+                configuration.getDriver(),
+                configuration.getServerName(),
+                configuration.getPortNumber(),
+                dataBase);
+            connection = DriverManager.getConnection(databaseUrl, userName, password);
+        } catch (SQLException e) {
+            connection = null;
+            throw new RuntimeException("Unable to connect to database: "+ dataBase +" User name: "+ userName, e);
+        }
+    }
+
+    @Override
+    public boolean isConnected() {
+        return connection != null;
+    }
 
     private Connection connection;
 
@@ -101,24 +129,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
     }
 
-    @Override
-    public void connect(String database, String userName, String password) {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Please add JDBC jar to project.");
-            e.printStackTrace();
-        }
-        try {
-            connection = DriverManager.getConnection(
-                "jdbs:postgresql://localhost:5432/" + database, userName, password);
-        } catch (SQLException e) {
-            System.out.println(String.format("Cant get connection for database:%s user:%s", database, userName));
-            e.printStackTrace();
-            connection = null;
-        }
-    }
-
     private static String getNameFormatted(DataSet newValue, String format) {
         String string = "";
         for (String name : newValue.getNames()) {
@@ -167,10 +177,5 @@ public class JDBCDatabaseManager implements DatabaseManager {
             e.printStackTrace();
             return tables;
         }
-    }
-
-    @Override
-    public boolean isConnected() {
-        return connection != null;
     }
 }
