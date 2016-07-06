@@ -19,9 +19,6 @@ public class Help implements Command {
     public void process(String command) {
         view.write("Existing command:");
 
-        view.write("\tconnect|databaseName|userName|password");
-        view.write("\t\tto connect to a database, which will work");
-
         view.write("\tlist");
         view.write("\t\tfor a list of all database tables, is connected to");
 

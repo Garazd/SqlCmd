@@ -18,5 +18,6 @@ public class Unsupported implements Command {
     @Override
     public void process(final String command) {
         view.write("Nonexistent command: " + command);
+        view.write("Enter command (or help for help):");
     }
 }
