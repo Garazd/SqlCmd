@@ -1,6 +1,6 @@
 package ua.com.juja.garazd.sqlcmd.integration;
 
-import ua.com.juja.garazd.sqlcmd.controller.Main;
+import ua.com.juja.garazd.sqlcmd.Main;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
