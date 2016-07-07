@@ -11,8 +11,8 @@ public class MainController {
     private Command[] commands;
 
     public MainController(DatabaseManager manager, View view) {
-        this.view = view;
         this.manager = manager;
+        this.view = view;
         this.commands = new Command[]{
             new Help(view),
             new Exit(view),
@@ -25,6 +25,8 @@ public class MainController {
     }
 
     public void run() {
+        view.write("Hello user!");
+        view.write("Welcome to SQLCmd");
         if (!connectionDatabase()) {
             return;
         }
@@ -47,7 +49,7 @@ public class MainController {
             if (!manager.isConnected()) {
                 view.write("To retry? (y/n):");
                 String input = view.read();
-                if (!input.equals("y")) {
+                if (!input.equalsIgnoreCase("y")) {
                     view.write("See you later! Bye");
                     return false;
                 }
@@ -58,8 +60,6 @@ public class MainController {
     }
 
     private void doWork() {
-        view.write("Hello user!");
-        view.write("Welcome to SQLCmd");
         view.write("Enter command (or help for help):");
 
         while (true) {
