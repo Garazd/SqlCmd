@@ -25,8 +25,7 @@ public class MainController {
     }
 
     public void run() {
-        view.write("Hello user!");
-        view.write("Welcome to SQLCmd");
+
         if (!connectionDatabase()) {
             return;
         }
