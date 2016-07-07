@@ -48,7 +48,7 @@ public class ExitTest {
         }
 
         //then
-        assertEquals("See you later!\n", view.getContent());
+        assertEquals("See you later! Bye\n", view.getContent());
         //throws
     }
 }
