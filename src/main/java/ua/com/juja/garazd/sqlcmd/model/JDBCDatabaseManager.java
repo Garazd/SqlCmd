@@ -15,10 +15,12 @@ import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 
 public class JDBCDatabaseManager implements DatabaseManager {
 
+    private static Configuration configuration = new Configuration();
+
     @Override
     public void connect(String dataBase, String userName, String password) {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(configuration.getClassDriver());
         } catch (ClassNotFoundException e) {
             System.out.println("Please add JDBC jar to project.");
             e.printStackTrace();
@@ -26,11 +28,11 @@ public class JDBCDatabaseManager implements DatabaseManager {
         try {
             Configuration configuration = new Configuration();
             String databaseUrl = String.format("%s%s:%s/%s",
-                configuration.getDriver(),
+                configuration.getJdbcDriver(),
                 configuration.getServerName(),
                 configuration.getPortNumber(),
-                dataBase);
-            connection = DriverManager.getConnection(databaseUrl, userName, password);
+                configuration.getDatabaseName());
+                connection = DriverManager.getConnection(databaseUrl, userName, password);
         } catch (SQLException e) {
             connection = null;
             throw new RuntimeException("Unable to connect to database: "+ dataBase +" User name: "+ userName, e);
