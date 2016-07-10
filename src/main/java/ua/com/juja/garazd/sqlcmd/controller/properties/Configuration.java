@@ -14,7 +14,8 @@ public final class Configuration {
     private String serverName;
     private String portNumber;
     private String userName;
-    private String driver;
+    private String classDriver;
+    private String jdbcDriver;
     private String password;
 
     public Configuration() {
@@ -26,7 +27,8 @@ public final class Configuration {
         File file = new File(CONFIG_SQLCMD_PROPERTIES);
         try (FileInputStream fileInput = new FileInputStream(file)) {
             properties.load(fileInput);
-            driver = properties.getProperty("database.jdbc.driver");
+            classDriver = properties.getProperty("database.class.driver");
+            jdbcDriver = properties.getProperty("database.jdbc.driver");
             serverName = properties.getProperty("database.server.name");
             databaseName = properties.getProperty("database.name");
             portNumber = properties.getProperty("database.port");
@@ -49,8 +51,8 @@ public final class Configuration {
         return portNumber;
     }
 
-    public String getDriver() {
-        return driver;
+    public String getJdbcDriver() {
+        return jdbcDriver;
     }
 
     public String getUserName() {
@@ -59,5 +61,9 @@ public final class Configuration {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getClassDriver() {
+        return classDriver;
     }
 }
