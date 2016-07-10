@@ -1,20 +1,44 @@
 package ua.com.juja.garazd.sqlcmd.integration;
 
-import ua.com.juja.garazd.sqlcmd.Main;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import ua.com.juja.garazd.sqlcmd.Main;
+import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.model.JDBCDatabaseManager;
-import org.junit.Before;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class IntegrationTest {
 
+    private static Configuration configuration = new Configuration();
+
+    private static String DATABASE_NAME = configuration.getDatabaseName();
+    private static String USER_NAME = configuration.getUserName();
+    private static String PASSWORD = configuration.getPassword();
+
     private ConfigurableInputStream in;
     private ByteArrayOutputStream out;
-    private DatabaseManager manager;
+
+    private static DatabaseManager manager;
+
+    @BeforeClass
+    public static void init() {
+        manager = new JDBCDatabaseManager();
+        manager.connect(DATABASE_NAME, USER_NAME, PASSWORD);
+    }
+    @Before
+    public void setup() {
+        manager.connect(DATABASE_NAME, USER_NAME, PASSWORD);
+        in = new ConfigurableInputStream();
+        out = new ByteArrayOutputStream();
+
+        System.setIn(in);
+        System.setOut(new PrintStream(out));
+    }
 
     public String getData() {
         try {
@@ -24,16 +48,6 @@ public class IntegrationTest {
         } catch (UnsupportedEncodingException e) {
             return e.getMessage();
         }
-    }
-
-    @Before
-    public void setup() {
-        in = new ConfigurableInputStream();
-        out = new ByteArrayOutputStream();
-        manager = new JDBCDatabaseManager();
-
-        System.setIn(in);
-        System.setOut(new PrintStream(out));
     }
 
     @Test
@@ -46,12 +60,9 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
+        assertEquals("Enter command (or help for help):\r\n" +
             // help
             "Existing command:\r\n" +
-            "\tconnect|databaseName|userName|password\r\n" +
-            "\t\tto connect to a database, which will work\r\n" +
             "\tlist\r\n" +
             "\t\tfor a list of all database tables, is connected to\r\n" +
             "\tclear|tableName\r\n" +
@@ -64,9 +75,8 @@ public class IntegrationTest {
             "\t\tto display the list on the screen\r\n" +
             "\texit\r\n" +
             "\t\tto exit from the program\r\n" +
-            "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -78,10 +88,9 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
+        assertEquals("Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -132,42 +141,17 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // unsupported
-            "You can not use the command 'unsupported' is until you connect using commands connect|databaseName|userName|password\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // exit
-            "See you later!\r\n", getData());
-    }
-
-    @Test
-    public void testUnsupportedAfterConnect() {
-        // given
-        in.add("connect|sqlcmd|postgres|postgres");
-        in.add("unsupported");
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // connect
-            "Success!\r\n" +
-            "Enter command (or help for help):\r\n" +
+        assertEquals("Enter command (or help for help):\r\n" +
             // unsupported
             "Nonexistent command: unsupported\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
     public void testListAfterConnect() {
         // given
-        in.add("connect|sqlcmd|postgres|postgres");
         in.add("list");
         in.add("exit");
 
@@ -190,7 +174,6 @@ public class IntegrationTest {
     @Test
     public void testFindAfterConnect() {
         // given
-        in.add("connect|sqlcmd|postgres|postgres");
         in.add("find|user");
         in.add("exit");
 
@@ -216,7 +199,6 @@ public class IntegrationTest {
     @Test
     public void testConnectAfterConnect() {
         // given
-        in.add("connect|sqlcmd|postgres|postgres");
         in.add("list");
         in.add("connect|test|postgres|postgres");
         in.add("list");
@@ -247,7 +229,7 @@ public class IntegrationTest {
     @Test
     public void testConnectWithError() {
         // given
-        in.add("connect|sqlcmd");
+        in.add(DATABASE_NAME);
         in.add("exit");
 
         // when
@@ -267,7 +249,6 @@ public class IntegrationTest {
     @Test
     public void testFindAfterConnectWithData() {
         // given
-        in.add("connect|sqlcmd|postgres|postgres");
         in.add("clear|user");
         in.add("create|user|id|13|name|Vitaliy|password|*****");
         in.add("create|user|id|14|name|Tanya|password|+++++");
@@ -307,7 +288,6 @@ public class IntegrationTest {
     @Test
     public void testClearWithError() {
         // given
-        in.add("connect|sqlcmd|postgres|postgres");
         in.add("clear|sadfasd|fsf|fdsf");
         in.add("exit");
 
@@ -331,7 +311,6 @@ public class IntegrationTest {
     @Test
     public void testCreateWithErrors() {
         // given
-        in.add("connect|sqlcmd|postgres|postgres");
         in.add("create|user|error");
         in.add("exit");
 
@@ -351,4 +330,8 @@ public class IntegrationTest {
             // exit
             "See you later!\r\n", getData());
     }
+
+//    private void assertOutput(String expected) {
+//        assertEquals(expected.replaceAll("\\n", System.lineSeparator()).replaceAll("%s", "\n"), in.getOut());
+//    }
 }
