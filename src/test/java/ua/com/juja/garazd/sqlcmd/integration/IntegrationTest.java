@@ -109,7 +109,7 @@ public class IntegrationTest {
             "You can not use the command 'list' is until you connect using commands connect|databaseName|userName|password\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class IntegrationTest {
             "You can not use the command 'find|user' is until you connect using commands connect|databaseName|userName|password\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye \r\n", getData());
     }
 
     @Test
@@ -168,7 +168,7 @@ public class IntegrationTest {
             "[user, test]\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class IntegrationTest {
             "--------------------\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -223,7 +223,7 @@ public class IntegrationTest {
             "[qwe]\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -243,7 +243,7 @@ public class IntegrationTest {
             "Please try again.\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -282,7 +282,7 @@ public class IntegrationTest {
             "--------------------\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -295,17 +295,13 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // connect
-            "Success!\r\n" +
+        assertEquals(
             "Enter command (or help for help):\r\n" +
             // clear|sadfasd|fsf|fdsf
             "Failure! because of: command format is 'clear|tableName', and you have brought: clear|sadfasd|fsf|fdsf\r\n" +
             "Please try again.\r\n" +
-            "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
     @Test
@@ -318,17 +314,14 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // connect
-            "Success!\r\n" +
+        assertEquals(
             "Enter command (or help for help):\r\n" +
             // create|user|error
             "Failure! because of: Must be an even number of parameters in a format 'create|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'create|user|error'\r\n" +
             "Please try again.\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later!\r\n", getData());
+            "See you later! Bye\r\n", getData());
     }
 
 //    private void assertOutput(String expected) {
