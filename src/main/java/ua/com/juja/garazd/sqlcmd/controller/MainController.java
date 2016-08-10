@@ -1,6 +1,7 @@
 package ua.com.juja.garazd.sqlcmd.controller;
 
 import ua.com.juja.garazd.sqlcmd.controller.command.*;
+import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
@@ -25,22 +26,23 @@ public class MainController {
     }
 
     public void run() {
-
-        if (!connectionDatabase()) {
-            return;
+        try {
+            if (!connectionDatabase()) {
+                return;
+            }
+            doWork();
+        } catch (ExitException e) {
+            // do nothing
         }
-        doWork();
     }
 
     private boolean connectionDatabase() {
         while (!manager.isConnected()) {
-            view.write("Enter the database name: ");
-            String databaseName = view.read();
-            view.write("Enter user name: ");
-            String userName = view.read();
-            view.write("Enter password: ");
-            String password = view.read();
             try {
+                Configuration configuration = new Configuration();
+                String databaseName = configuration.getDatabaseName();
+                String userName = configuration.getUserName();
+                String password = configuration.getPassword();
                 manager.connect(databaseName, userName, password);
             } catch (Exception e) {
                 printError(e);
