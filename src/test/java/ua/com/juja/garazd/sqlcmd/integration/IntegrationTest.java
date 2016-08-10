@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 public class IntegrationTest {
 
     private static Configuration configuration = new Configuration();
-
     private static String DATABASE_NAME = configuration.getDatabaseName();
     private static String USER_NAME = configuration.getUserName();
     private static String PASSWORD = configuration.getPassword();
@@ -60,7 +59,8 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Enter command (or help for help):\r\n" +
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
             // help
             "Existing command:\r\n" +
             "\tlist\r\n" +
@@ -88,13 +88,14 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Enter command (or help for help):\r\n" +
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
             // exit
             "See you later! Bye\r\n", getData());
     }
 
     @Test
-    public void testListWithoutConnect() {
+    public void testTables() {
         // given
         in.add("list");
         in.add("exit");
@@ -103,32 +104,12 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // list
-            "You can not use the command 'list' is until you connect using commands connect|databaseName|userName|password\r\n" +
+        assertEquals("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
+            // list
+            "[user, test]\r\n" +
             // exit
             "See you later! Bye\r\n", getData());
-    }
-
-    @Test
-    public void testFindWithoutConnect() {
-        // given
-        in.add("find|user");
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // find|user
-            "You can not use the command 'find|user' is until you connect using commands connect|databaseName|userName|password\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // exit
-            "See you later! Bye \r\n", getData());
     }
 
     @Test
@@ -141,7 +122,8 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Enter command (or help for help):\r\n" +
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
             // unsupported
             "Nonexistent command: unsupported\r\n" +
             "Enter command (or help for help):\r\n" +
@@ -150,29 +132,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void testListAfterConnect() {
-        // given
-        in.add("list");
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // connect
-            "Success!\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // list
-            "[user, test]\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // exit
-            "See you later! Bye\r\n", getData());
-    }
-
-    @Test
-    public void testFindAfterConnect() {
+    public void testFind() {
         // given
         in.add("find|user");
         in.add("exit");
@@ -181,26 +141,24 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // connect
-            "Success!\r\n" +
+        assertEquals("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // find|user
             "--------------------\r\n" +
             "|name|password|id|\r\n" +
             "--------------------\r\n" +
+            "|Vitaliy|*****|13|\r\n" +
+            "|Tanya|+++++|14|\r\n" +
             "--------------------\r\n" +
-            "Enter command (or help for help):\r\n" +
             // exit
             "See you later! Bye\r\n", getData());
     }
 
     @Test
-    public void testConnectAfterConnect() {
+    public void testNonexistentCommand() {
         // given
         in.add("list");
-        in.add("connect|test|postgres|postgres");
+        in.add("connect");
         in.add("list");
         in.add("exit");
 
@@ -208,46 +166,21 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // connect sqlcmd
-            "Success!\r\n" +
+        assertEquals("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // list
             "[user, test]\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // connect test
-            "Success!\r\n" +
+            // connect
+            "Nonexistent command: connect\r\n" +
             "Enter command (or help for help):\r\n" +
             // list
-            "[qwe]\r\n" +
-            "Enter command (or help for help):\r\n" +
+            "[user, test]\r\n" +
             // exit
             "See you later! Bye\r\n", getData());
     }
 
     @Test
-    public void testConnectWithError() {
-        // given
-        in.add(DATABASE_NAME);
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // connect sqlcmd
-            "Failure! because of: Invalid number of parameters separated by sign '|', expected 4, but there is: 2\r\n" +
-            "Please try again.\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // exit
-            "See you later! Bye\r\n", getData());
-    }
-
-    @Test
-    public void testFindAfterConnectWithData() {
+    public void testClearAndCreateTableData() {
         // given
         in.add("clear|user");
         in.add("create|user|id|13|name|Vitaliy|password|*****");
@@ -259,20 +192,14 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Hello user!\r\n" +
-            "Please enter a database name, username and password in the format: connect|database|userName|password\r\n" +
-            // connect
-            "Success!\r\n" +
+        assertEquals("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // clear|user
             "Table user has been successfully cleared.\r\n" +
-            "Enter command (or help for help):\r\n" +
             // create|user|id|13|name|Vitaliy|password|*****
             "Recording {names:[id, name, password], values:[13, Vitaliy, *****]} was successfully created in the table 'user'.\r\n" +
-            "Enter command (or help for help):\r\n" +
             // create|user|id|14|name|Tanya|password|+++++
             "Recording {names:[id, name, password], values:[14, Tanya, +++++]} was successfully created in the table 'user'.\r\n" +
-            "Enter command (or help for help):\r\n" +
             // find|user
             "--------------------\r\n" +
             "|name|password|id|\r\n" +
@@ -280,7 +207,6 @@ public class IntegrationTest {
             "|Vitaliy|*****|13|\r\n" +
             "|Tanya|+++++|14|\r\n" +
             "--------------------\r\n" +
-            "Enter command (or help for help):\r\n" +
             // exit
             "See you later! Bye\r\n", getData());
     }
@@ -295,7 +221,7 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals(
+        assertEquals("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // clear|sadfasd|fsf|fdsf
             "Failure! because of: command format is 'clear|tableName', and you have brought: clear|sadfasd|fsf|fdsf\r\n" +
@@ -314,17 +240,12 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals(
+        assertEquals("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // create|user|error
             "Failure! because of: Must be an even number of parameters in a format 'create|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'create|user|error'\r\n" +
             "Please try again.\r\n" +
-            "Enter command (or help for help):\r\n" +
             // exit
             "See you later! Bye\r\n", getData());
     }
-
-//    private void assertOutput(String expected) {
-//        assertEquals(expected.replaceAll("\\n", System.lineSeparator()).replaceAll("%s", "\n"), in.getOut());
-//    }
 }
