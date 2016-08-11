@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ua.com.juja.garazd.sqlcmd.Main;
 import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
@@ -21,16 +20,11 @@ public class IntegrationTest {
 
     private ConfigurableInputStream in;
     private ByteArrayOutputStream out;
+    private DatabaseManager manager;
 
-    private static DatabaseManager manager;
-
-    @BeforeClass
-    public static void init() {
-        manager = new JDBCDatabaseManager();
-        manager.connect(DATABASE_NAME, USER_NAME, PASSWORD);
-    }
     @Before
     public void setup() {
+        manager = new JDBCDatabaseManager();
         manager.connect(DATABASE_NAME, USER_NAME, PASSWORD);
         in = new ConfigurableInputStream();
         out = new ByteArrayOutputStream();
