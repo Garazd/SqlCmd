@@ -50,6 +50,130 @@ public class IntegrationTest {
     }
 
     @Test
+    public void testClear() {
+        // given
+        in.add("clear|user");
+        in.add("exit");
+
+        // when
+        Main.main(new String[0]);
+
+        // then
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
+            // clear|user
+            "Table user has been successfully cleared.\r\n" +
+            // exit
+            "See you later! Bye\r\n", getData());
+    }
+
+    @Test
+    public void testClearWithError() {
+        // given
+        in.add("clear|sadfasd|fsf|fdsf");
+        in.add("exit");
+
+        // when
+        Main.main(new String[0]);
+
+        // then
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
+            // clear|sadfasd|fsf|fdsf
+            "Failure! because of: command format is 'clear|tableName', and you have brought: clear|sadfasd|fsf|fdsf\r\n" +
+            "Please try again.\r\n" +
+            // exit
+            "See you later! Bye\r\n", getData());
+    }
+
+    @Test
+    public void testClearAndCreateTableData() {
+        // given
+        in.add("clear|user");
+        in.add("create|user|id|13|name|Stiven|password|*****");
+        in.add("create|user|id|14|name|Eva|password|+++++");
+        in.add("find|user");
+        in.add("exit");
+
+        // when
+        Main.main(new String[0]);
+
+        // then
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
+            // clear|user
+            "Table user has been successfully cleared.\r\n" +
+            // create|user|id|13|name|Stiven|password|*****
+            "Recording {names:[id, name, password], values:[13, Stiven, *****]} was successfully created in the table 'user'.\r\n" +
+            // create|user|id|14|name|Eva|password|+++++
+            "Recording {names:[id, name, password], values:[14, Eva, +++++]} was successfully created in the table 'user'.\r\n" +
+            // find|user
+            "--------------------\r\n" +
+            "|name|password|id|\r\n" +
+            "--------------------\r\n" +
+            "|Stiven|*****|13|\r\n" +
+            "|Eva|+++++|14|\r\n" +
+            "--------------------\r\n" +
+            // exit
+            "See you later! Bye\r\n", getData());
+    }
+
+    @Test
+    public void testCreateWithErrors() {
+        // given
+        in.add("create|user|error");
+        in.add("exit");
+
+        // when
+        Main.main(new String[0]);
+
+        // then
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
+            // create|user|error
+            "Failure! because of: Must be an even number of parameters in a format 'create|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'create|user|error'\r\n" +
+            "Please try again.\r\n" +
+            // exit
+            "See you later! Bye\r\n", getData());
+    }
+
+    @Test
+    public void testExit() {
+        // given
+        in.add("exit");
+
+        // when
+        Main.main(new String[0]);
+
+        // then
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
+            // exit
+            "See you later! Bye\r\n", getData());
+    }
+
+    @Test
+    public void testFind() {
+        // given
+        in.add("find|user");
+        in.add("exit");
+
+        // when
+        Main.main(new String[0]);
+
+        // then
+        assertEquals("Connecting to a database is successful\r\n" +
+            "Enter command (or help for help):\r\n" +
+            // find|user
+            "--------------------\r\n" +
+            "|name|password|id|\r\n" +
+            "--------------------\r\n" +
+            "--------------------\r\n" +
+            // exit
+            "See you later! Bye\r\n", getData());
+    }
+
+    @Test
     public void testHelp() {
         // given
         in.add("help");
@@ -75,21 +199,6 @@ public class IntegrationTest {
             "\t\tto display the list on the screen\r\n" +
             "\texit\r\n" +
             "\t\tto exit from the program\r\n" +
-            // exit
-            "See you later! Bye\r\n", getData());
-    }
-
-    @Test
-    public void testExit() {
-        // given
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
             // exit
             "See you later! Bye\r\n", getData());
     }
@@ -132,29 +241,6 @@ public class IntegrationTest {
     }
 
     @Test
-    public void testFind() {
-        // given
-        in.add("find|user");
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // find|user
-            "--------------------\r\n" +
-            "|name|password|id|\r\n" +
-            "--------------------\r\n" +
-            "|Vitaliy|*****|13|\r\n" +
-            "|Tanya|+++++|14|\r\n" +
-            "--------------------\r\n" +
-            // exit
-            "See you later! Bye\r\n", getData());
-    }
-
-    @Test
     public void testNonexistentCommand() {
         // given
         in.add("list");
@@ -175,76 +261,6 @@ public class IntegrationTest {
             "Enter command (or help for help):\r\n" +
             // list
             "[user, test]\r\n" +
-            // exit
-            "See you later! Bye\r\n", getData());
-    }
-
-    @Test
-    public void testClearAndCreateTableData() {
-        // given
-        in.add("clear|user");
-        in.add("create|user|id|13|name|Vitaliy|password|*****");
-        in.add("create|user|id|14|name|Tanya|password|+++++");
-        in.add("find|user");
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // clear|user
-            "Table user has been successfully cleared.\r\n" +
-            // create|user|id|13|name|Vitaliy|password|*****
-            "Recording {names:[id, name, password], values:[13, Vitaliy, *****]} was successfully created in the table 'user'.\r\n" +
-            // create|user|id|14|name|Tanya|password|+++++
-            "Recording {names:[id, name, password], values:[14, Tanya, +++++]} was successfully created in the table 'user'.\r\n" +
-            // find|user
-            "--------------------\r\n" +
-            "|name|password|id|\r\n" +
-            "--------------------\r\n" +
-            "|Vitaliy|*****|13|\r\n" +
-            "|Tanya|+++++|14|\r\n" +
-            "--------------------\r\n" +
-            // exit
-            "See you later! Bye\r\n", getData());
-    }
-
-    @Test
-    public void testClearWithError() {
-        // given
-        in.add("clear|sadfasd|fsf|fdsf");
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // clear|sadfasd|fsf|fdsf
-            "Failure! because of: command format is 'clear|tableName', and you have brought: clear|sadfasd|fsf|fdsf\r\n" +
-            "Please try again.\r\n" +
-            // exit
-            "See you later! Bye\r\n", getData());
-    }
-
-    @Test
-    public void testCreateWithErrors() {
-        // given
-        in.add("create|user|error");
-        in.add("exit");
-
-        // when
-        Main.main(new String[0]);
-
-        // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // create|user|error
-            "Failure! because of: Must be an even number of parameters in a format 'create|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'create|user|error'\r\n" +
-            "Please try again.\r\n" +
             // exit
             "See you later! Bye\r\n", getData());
     }
