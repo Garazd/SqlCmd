@@ -18,7 +18,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     private static Configuration configuration = new Configuration();
 
     @Override
-    public void connect(String dataBase, String userName, String password) {
+    public void connectDatabase(String dataBase, String userName, String password) {
         try {
             Class.forName(configuration.getClassDriver());
         } catch (ClassNotFoundException e) {
@@ -35,7 +35,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
                 connection = DriverManager.getConnection(databaseUrl, userName, password);
         } catch (SQLException e) {
             connection = null;
-            throw new RuntimeException("Unable to connect to database: "+ dataBase +" User name: "+ userName, e);
+            throw new RuntimeException("Unable to connectDatabase to database: "+ dataBase +" User name: "+ userName, e);
         }
     }
 
@@ -47,7 +47,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     private Connection connection;
 
     @Override
-    public void create(String tableName, DataSet input) {
+    public void createTable(String tableName, DataSet input) {
         try (Statement statement = connection.createStatement())
         {
             String tableNames = getNameFormatted(input, "%s,");
@@ -61,7 +61,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void update(String tableName, int id, DataSetImpl newValue) {
+    public void updateTable(String tableName, int id, DataSetImpl newValue) {
 
         String tableNames = getNameFormatted(newValue, "%s = ?,");
         String sql = "UPDATE public." + tableName + " SET " + tableNames +
@@ -82,7 +82,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public void clear(String tableName) {
+    public void clearTable(String tableName) {
         try (Statement statement = connection.createStatement())
         {
             statement.executeUpdate("DELETE FROM public." + tableName);
@@ -93,7 +93,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public Set<String> getTableNames() {
-        Set<String> tables = new LinkedHashSet<String>();
+        Set<String> tables = new LinkedHashSet<>();
         try (Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery
             ("SELECT table_name FROM information_schema.tables " +
@@ -111,12 +111,11 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public List<DataSet> getTableData(String tableName) {
-        List<DataSet> result = new LinkedList<DataSet>();
+        List<DataSet> result = new LinkedList<>();
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM public." + tableName))
         {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-            int index = 0;
             while (resultSet.next()) {
                 DataSet dataSet = new DataSetImpl();
                 result.add(dataSet);
@@ -165,7 +164,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public Set<String> getTableColumns(String tableName) {
-        Set<String> tables = new LinkedHashSet<String>();
+        Set<String> tables = new LinkedHashSet<>();
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(
                  "SELECT * FROM information_schema.columns " +
