@@ -16,7 +16,7 @@ public abstract class DatabaseManagerTest {
     @Before
     public void setup() {
         manager = getDatabaseManager();
-        manager.connect("sqlcmd", "postgres", "postgres");
+        manager.connectDatabase("sqlcmd", "postgres", "postgres");
     }
 
     @Test
@@ -35,14 +35,14 @@ public abstract class DatabaseManagerTest {
     @Test
     public void testGetTableData() {
         //given
-        manager.clear("user");
+        manager.clearTable("user");
 
         //when
         DataSet input = new DataSetImpl();
         input.put("name", "Stiven");
         input.put("password", "pass");
         input.put("id", 4);
-        manager.create("user", input);
+        manager.createTable("user", input);
 
         //then
         List<DataSet> users = manager.getTableData("user");
@@ -56,19 +56,19 @@ public abstract class DatabaseManagerTest {
     @Test
     public void testUpdateTableData() {
         //given
-        manager.clear("user");
+        manager.clearTable("user");
 
         DataSet input = new DataSetImpl();
         input.put("name", "Stiven");
         input.put("password", "pass");
         input.put("id", 4);
-        manager.create("user", input);
+        manager.createTable("user", input);
 
         //when
         DataSetImpl newValue = new DataSetImpl();
         newValue.put("password", "pass2");
         newValue.put("name", "Eva");
-        manager.update("user", 4, newValue);
+        manager.updateTable("user", 4, newValue);
 
         //then
         List<DataSet> users = manager.getTableData("user");
@@ -82,7 +82,7 @@ public abstract class DatabaseManagerTest {
     @Test
     public void testGetColumnNames() {
         //given
-        manager.clear("user");
+        manager.clearTable("user");
 
         //when
         Set<String> columnNames = manager.getTableColumns("user");
