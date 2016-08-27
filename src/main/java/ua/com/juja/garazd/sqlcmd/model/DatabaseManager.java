@@ -5,11 +5,11 @@ import java.util.Set;
 
 public interface DatabaseManager {
 
-    void create(String tableName, DataSet input);
+    void createTable(String tableName, DataSet input);
 
-    void update(String tableName, int id, DataSetImpl newValue);
+    void updateTable(String tableName, int id, DataSetImpl newValue);
 
-    void clear(String tableName);
+    void clearTable(String tableName);
 
     Set<String> getTableNames();
 
@@ -17,7 +17,7 @@ public interface DatabaseManager {
 
     int getSize(String tableName);
 
-    void connect(String database, String userName, String password);
+    void connectDatabase(String database, String userName, String password);
 
     Set<String> getTableColumns(String tableName);
 
