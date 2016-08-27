@@ -11,7 +11,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class ClearTest {
+public class ClearTableTest {
 
     private DatabaseManager manager;
     private View view;
@@ -21,7 +21,7 @@ public class ClearTest {
     public void setup() {
         manager = mock(DatabaseManager.class);
         view = mock(View.class);
-        command = new Clear(manager, view);
+        command = new ClearTable(manager, view);
     }
 
     @Test
@@ -29,10 +29,10 @@ public class ClearTest {
         // given
 
         // when
-        command.process("clear|user");
+        command.process("clearTable|user");
 
         // then
-        verify(manager).clear("user");
+        verify(manager).clearTable("user");
         verify(view).write("Table user has been successfully cleared.");
     }
 
@@ -42,7 +42,7 @@ public class ClearTest {
         // given
 
         // when
-        boolean canProcess = command.canProcess("clear|user");
+        boolean canProcess = command.canProcess("clearTable|user");
 
         // then
         assertTrue(canProcess);
@@ -53,7 +53,7 @@ public class ClearTest {
         // given
 
         // when
-        boolean canProcess = command.canProcess("clear");
+        boolean canProcess = command.canProcess("clearTable");
 
         // then
         assertFalse(canProcess);
@@ -74,11 +74,11 @@ public class ClearTest {
     public void testValidationErrorWhenCountParametersIsLessThenTwo() {
         // when
         try {
-            command.process("clear");
+            command.process("clearTable");
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("command format is 'clear|tableName', and you have brought: clear", e.getMessage());
+            assertEquals("command format is 'clearTable|tableName', and you have brought: clearTable", e.getMessage());
         }
     }
     
@@ -87,11 +87,11 @@ public class ClearTest {
 
         // when
         try {
-            command.process("clear|table|qwe");
+            command.process("clearTable|table|qwe");
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("command format is 'clear|tableName', and you have brought: clear|table|qwe", e.getMessage());
+            assertEquals("command format is 'clearTable|tableName', and you have brought: clearTable|table|qwe", e.getMessage());
         }
     }
 }
