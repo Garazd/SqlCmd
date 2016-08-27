@@ -4,7 +4,7 @@ import java.util.*;
 
 public class DataSetImpl implements DataSet {
 
-    private Map<String, Object> data = new LinkedHashMap<String, Object>();
+    private Map<String, Object> data = new LinkedHashMap<>();
 
     @Override
     public void put(String name, Object value) {
@@ -18,7 +18,7 @@ public class DataSetImpl implements DataSet {
 
     @Override
     public List<Object> getValues() {
-        return new ArrayList<Object>(data.values());
+        return new ArrayList<>(data.values());
     }
 
     @Override
