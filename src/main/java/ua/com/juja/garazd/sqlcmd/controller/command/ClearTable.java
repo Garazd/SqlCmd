@@ -3,28 +3,28 @@ package ua.com.juja.garazd.sqlcmd.controller.command;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
-public class Clear implements Command {
+public class ClearTable implements Command {
 
     private DatabaseManager manager;
     private View view;
 
-    public Clear(DatabaseManager manager, View view) {
+    public ClearTable(DatabaseManager manager, View view) {
         this.manager = manager;
         this.view = view;
     }
 
     @Override
     public boolean canProcess(String command) {
-        return command.startsWith("clear|");
+        return command.startsWith("clearTable|");
     }
 
     @Override
     public void process(String command) {
         String[] data = command.split("\\|");
         if (data.length != 2) {
-            throw new IllegalArgumentException("command format is 'clear|tableName', and you have brought: " + command);
+            throw new IllegalArgumentException("command format is 'clearTable|tableName', and you have brought: " + command);
         }
-        manager.clear(data[1]);
+        manager.clearTable(data[1]);
 
         view.write(String.format("Table %s has been successfully cleared.", data[1]));
     }
