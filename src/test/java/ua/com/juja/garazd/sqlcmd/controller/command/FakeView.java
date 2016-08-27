@@ -5,7 +5,7 @@ import ua.com.juja.garazd.sqlcmd.view.View;
 public class FakeView implements View {
 
     private String massages = "";
-    private String input = null;
+    private String input;
 
     @Override
     public void write(String massage) {
