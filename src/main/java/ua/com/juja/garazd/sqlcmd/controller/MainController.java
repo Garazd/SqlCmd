@@ -1,11 +1,23 @@
 package ua.com.juja.garazd.sqlcmd.controller;
 
-import ua.com.juja.garazd.sqlcmd.controller.command.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ua.com.juja.garazd.sqlcmd.controller.command.ClearTable;
+import ua.com.juja.garazd.sqlcmd.controller.command.Command;
+import ua.com.juja.garazd.sqlcmd.controller.command.CreateTable;
+import ua.com.juja.garazd.sqlcmd.controller.command.Exit;
+import ua.com.juja.garazd.sqlcmd.controller.command.ExitException;
+import ua.com.juja.garazd.sqlcmd.controller.command.Find;
+import ua.com.juja.garazd.sqlcmd.controller.command.Help;
+import ua.com.juja.garazd.sqlcmd.controller.command.Tables;
+import ua.com.juja.garazd.sqlcmd.controller.command.Unsupported;
 import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class MainController {
+
+    private static Logger logger = LogManager.getLogger(MainController.class.getName());
 
     private DatabaseManager manager;
     private View view;
@@ -18,8 +30,8 @@ public class MainController {
             new Help(view),
             new Exit(view),
             new Tables(manager, view),
-            new Clear(manager, view),
-            new Create(manager, view),
+            new ClearTable(manager, view),
+            new CreateTable(manager, view),
             new Find(manager, view),
             new Unsupported(view)
         };
@@ -32,7 +44,7 @@ public class MainController {
             }
             doWork();
         } catch (ExitException e) {
-            // do nothing
+            logger.debug("Error in the method run " + e);
         }
     }
 
@@ -43,9 +55,9 @@ public class MainController {
                 String databaseName = configuration.getDatabaseName();
                 String userName = configuration.getUserName();
                 String password = configuration.getPassword();
-                manager.connect(databaseName, userName, password);
+                manager.connectDatabase(databaseName, userName, password);
             } catch (Exception e) {
-                printError(e);
+                logger.debug("Error in the method connectionDatabase " + e);
             }
             if (!manager.isConnected()) {
                 view.write("To retry? (y/n):");
@@ -74,7 +86,7 @@ public class MainController {
                     }
                 } catch (Exception e) {
                     if (e instanceof ExitException) {
-                        throw e;
+                        logger.debug("Error in the method doWork " + e);
                     }
                     printError(e);
                     break;
