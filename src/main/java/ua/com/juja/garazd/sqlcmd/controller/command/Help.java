@@ -22,11 +22,11 @@ public class Help implements Command {
         view.write("\tlist");
         view.write("\t\tfor a list of all database tables, is connected to");
 
-        view.write("\tclear|tableName");
+        view.write("\tclearTable|tableName");
         view.write("\t\tto clean up the entire table");
 
-        view.write("\tcreate|tableName|column1|value1|column2|value2|...|columnN|valueN");
-        view.write("\t\tto create a record in the table");
+        view.write("\tcreateTable|tableName|column1|value1|column2|value2|...|columnN|valueN");
+        view.write("\t\tto createTable a record in the table");
 
         view.write("\tfind|tableName");
         view.write("\t\tto get the contents of the table 'tableName'");
