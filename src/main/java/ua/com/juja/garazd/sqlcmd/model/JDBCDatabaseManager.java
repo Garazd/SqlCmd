@@ -11,10 +11,13 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 
 public class JDBCDatabaseManager implements DatabaseManager {
 
+    private static Logger logger = LogManager.getLogger(JDBCDatabaseManager.class.getName());
     private static Configuration configuration = new Configuration();
 
     @Override
@@ -23,7 +26,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             Class.forName(configuration.getClassDriver());
         } catch (ClassNotFoundException e) {
             System.out.println("Please add JDBC jar to project.");
-            e.printStackTrace();
+            logger.debug("Error in the method connectDatabase " + e);
         }
         try {
             Configuration configuration = new Configuration();
@@ -35,6 +38,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
                 connection = DriverManager.getConnection(databaseUrl, userName, password);
         } catch (SQLException e) {
             connection = null;
+            logger.debug("Error in the method connectDatabase " + e);
             throw new RuntimeException("Unable to connectDatabase to database: "+ dataBase +" User name: "+ userName, e);
         }
     }
@@ -56,7 +60,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             statement.executeUpdate("INSERT INTO public." + tableName + " (" + tableNames + ")" +
                 "VALUES (" + values + ")");
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.debug("Error in the method createTable " + e);
         }
     }
 
@@ -77,7 +81,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             preparedStatement.setObject(index, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.debug("Error in the method updateTable " + e);
         }
     }
 
@@ -87,7 +91,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         {
             statement.executeUpdate("DELETE FROM public." + tableName);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.debug("Error in the method clearTable " + e);
         }
     }
 
@@ -104,7 +108,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             }
             return tables;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.debug("Error in the method getTableNames " + e);
             return tables;
         }
     }
@@ -125,7 +129,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             }
             return result;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.debug("Error in the method getTableData " + e);
             return result;
         }
     }
@@ -157,7 +161,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             int size = resultSet.getInt(1);
             return size;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.debug("Error in the method getSize " + e);
             return 0;
         }
     }
@@ -175,7 +179,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             }
             return tables;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.debug("Error in the method getTableColumns " + e);
             return tables;
         }
     }
