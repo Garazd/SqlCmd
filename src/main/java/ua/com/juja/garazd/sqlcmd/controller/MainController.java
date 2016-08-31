@@ -17,7 +17,7 @@ import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class MainController {
 
-    private static Logger logger = LogManager.getLogger(MainController.class.getName());
+    Logger logger = LogManager.getLogger(MainController.class.getName());
 
     private DatabaseManager manager;
     private View view;
@@ -58,6 +58,7 @@ public class MainController {
                 manager.connectDatabase(databaseName, userName, password);
             } catch (Exception e) {
                 logger.debug("Error in the method connectionDatabase " + e);
+                printError(e);
             }
             if (!manager.isConnected()) {
                 view.write("To retry? (y/n):");
