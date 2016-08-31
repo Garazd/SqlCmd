@@ -17,8 +17,9 @@ import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 
 public class JDBCDatabaseManager implements DatabaseManager {
 
-    private static Logger logger = LogManager.getLogger(JDBCDatabaseManager.class.getName());
     private static Configuration configuration = new Configuration();
+    Logger logger = LogManager.getLogger(JDBCDatabaseManager.class.getName());
+    private Connection connection;
 
     @Override
     public void connectDatabase(String dataBase, String userName, String password) {
@@ -48,7 +49,27 @@ public class JDBCDatabaseManager implements DatabaseManager {
         return connection != null;
     }
 
-    private Connection connection;
+    @Override
+    public void createDatabase(String databaseName) {
+        executeUpdate("CREATE DATABASE " + databaseName);
+    }
+
+    @Override
+    public void dropDatabase(String databaseName) {
+        executeUpdate("DROP DATABASE IF EXISTS " + databaseName);
+    }
+
+    private void executeUpdate(String sql) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            try {
+                throw new SQLException("Error update data in case - %s\n", e);
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public void createTable(String tableName, DataSet input) {
@@ -62,6 +83,16 @@ public class JDBCDatabaseManager implements DatabaseManager {
         } catch (SQLException e) {
             logger.debug("Error in the method createTable " + e);
         }
+    }
+
+    @Override
+    public void dropTable(String tableName) {
+        dropSequence(tableName);
+        executeUpdate(String.format("DROP TABLE IF EXISTS public.%s CASCADE", tableName));
+    }
+
+    private void dropSequence(String tableName) {
+        executeUpdate(String.format("DROP SEQUENCE IF EXISTS public.%s_seq CASCADE", tableName));
     }
 
     @Override
@@ -150,20 +181,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
         values = values.substring(0, values.length() - 1);
         return values;
-    }
-
-    @Override
-    public int getSize(String tableName) {
-        try (Statement statement = connection.createStatement())
-        {
-            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM public." + tableName);
-            resultSet.next();
-            int size = resultSet.getInt(1);
-            return size;
-        } catch (SQLException e) {
-            logger.debug("Error in the method getSize " + e);
-            return 0;
-        }
     }
 
     @Override
