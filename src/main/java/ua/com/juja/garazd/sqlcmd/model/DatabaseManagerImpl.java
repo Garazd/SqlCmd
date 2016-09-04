@@ -1,7 +1,6 @@
 package ua.com.juja.garazd.sqlcmd.model;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -13,41 +12,12 @@ import java.util.List;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 
-public class JDBCDatabaseManager implements DatabaseManager {
+public class DatabaseManagerImpl implements DatabaseManager {
 
-    private static Configuration configuration = new Configuration();
-    Logger logger = LogManager.getLogger(JDBCDatabaseManager.class.getName());
-    private Connection connection;
-
-    @Override
-    public void connectDatabase(String dataBase, String userName, String password) {
-        try {
-            Class.forName(configuration.getClassDriver());
-        } catch (ClassNotFoundException e) {
-            System.out.println("Please add JDBC jar to project.");
-            logger.debug("Error in the method connectDatabase " + e);
-        }
-        try {
-            Configuration configuration = new Configuration();
-            String databaseUrl = String.format("%s%s:%s/%s",
-                configuration.getJdbcDriver(),
-                configuration.getServerName(),
-                configuration.getPortNumber(),
-                configuration.getDatabaseName());
-                connection = DriverManager.getConnection(databaseUrl, userName, password);
-        } catch (SQLException e) {
-            connection = null;
-            logger.debug("Error in the method connectDatabase " + e);
-            throw new RuntimeException("Unable to connectDatabase to database: "+ dataBase +" User name: "+ userName, e);
-        }
-    }
-
-    @Override
-    public boolean isConnected() {
-        return connection != null;
-    }
+    Logger logger = LogManager.getLogger(DatabaseManagerImpl.class.getName());
+    private DatabaseConnectionImpl databaseConnectionImpl = new DatabaseConnectionImpl();
+    private Connection connection = databaseConnectionImpl.getConnection();
 
     @Override
     public void createDatabase(String databaseName) {
@@ -73,8 +43,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void createTable(String tableName, DataSet input) {
-        try (Statement statement = connection.createStatement())
-        {
+        try (Statement statement = connection.createStatement()) {
             String tableNames = getNameFormatted(input, "%s,");
             String values = getValueFormatted(input, "'%s',");
 
@@ -102,11 +71,10 @@ public class JDBCDatabaseManager implements DatabaseManager {
         String sql = "UPDATE public." + tableName + " SET " + tableNames +
             " WHERE id = ?";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql))
-        {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             int index = 1;
             for (Object value : newValue.getValues()) {
-                preparedStatement.setObject(index , value);
+                preparedStatement.setObject(index, value);
                 index++;
             }
             preparedStatement.setObject(index, id);
@@ -118,8 +86,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
 
     @Override
     public void clearTable(String tableName) {
-        try (Statement statement = connection.createStatement())
-        {
+        try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("DELETE FROM public." + tableName);
         } catch (SQLException e) {
             logger.debug("Error in the method clearTable " + e);
@@ -130,10 +97,9 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public Set<String> getTableNames() {
         Set<String> tables = new LinkedHashSet<>();
         try (Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery
-            ("SELECT table_name FROM information_schema.tables " +
-            "WHERE table_schema='public' AND table_type = 'BASE TABLE'"))
-        {
+             ResultSet resultSet = statement.executeQuery
+                 ("SELECT table_name FROM information_schema.tables " +
+                     "WHERE table_schema='public' AND table_type = 'BASE TABLE'")) {
             while (resultSet.next()) {
                 tables.add(resultSet.getString("table_name"));
             }
@@ -148,8 +114,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public List<DataSet> getTableData(String tableName) {
         List<DataSet> result = new LinkedList<>();
         try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT * FROM public." + tableName))
-        {
+             ResultSet resultSet = statement.executeQuery("SELECT * FROM public." + tableName)) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
             while (resultSet.next()) {
                 DataSet dataSet = new DataSetImpl();
@@ -189,8 +154,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(
                  "SELECT * FROM information_schema.columns " +
-                 "WHERE table_schema = 'public' AND table_name = '" + tableName + "'"))
-        {
+                     "WHERE table_schema = 'public' AND table_name = '" + tableName + "'")) {
             while (resultSet.next()) {
                 tables.add(resultSet.getString("column_name"));
             }
