@@ -1,99 +1,63 @@
 package ua.com.juja.garazd.sqlcmd.integration;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import org.junit.Before;
 import org.junit.Test;
 import ua.com.juja.garazd.sqlcmd.Main;
-import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
-import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
-import ua.com.juja.garazd.sqlcmd.model.JDBCDatabaseManager;
-import static org.junit.Assert.assertEquals;
 
 public class IntegrationTest {
 
-    private static Configuration configuration = new Configuration();
-    private static String DATABASE_NAME = configuration.getDatabaseName();
-    private static String USER_NAME = configuration.getUserName();
-    private static String PASSWORD = configuration.getPassword();
-
-    private ConfigurableInputStream in;
-    private ByteArrayOutputStream out;
-    private DatabaseManager manager;
-
-    @Before
-    public void setup() {
-        manager = new JDBCDatabaseManager();
-        manager.connectDatabase(DATABASE_NAME, USER_NAME, PASSWORD);
-        in = new ConfigurableInputStream();
-        out = new ByteArrayOutputStream();
-
-        System.setIn(in);
-        System.setOut(new PrintStream(out));
-    }
-
-    public String getData() {
-        try {
-            String result = new String(out.toByteArray(), "UTF-8");
-            out.reset();
-            return result;
-        } catch (UnsupportedEncodingException e) {
-            return e.getMessage();
-        }
-    }
+    private ConsoleMock console = new ConsoleMock();
 
     @Test
     public void testClear() {
         // given
-        in.add("clearTable|user");
-        in.add("exit");
+        console.addIn("clearTable|user");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // clearTable|user
             "Table user has been successfully cleared.\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testClearWithError() {
         // given
-        in.add("clearTable|sadfasd|fsf|fdsf");
-        in.add("exit");
+        console.addIn("clearTable|sadfasd|fsf|fdsf");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // clearTable|sadfasd|fsf|fdsf
             "Failure! because of: command format is 'clearTable|tableName', and you have brought: clearTable|sadfasd|fsf|fdsf\r\n" +
             "Please try again.\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testClearAndCreateTableData() {
         // given
-        in.add("clearTable|user");
-        in.add("createTable|user|id|13|name|Stiven|password|*****");
-        in.add("createTable|user|id|14|name|Eva|password|+++++");
-        in.add("find|user");
-        in.add("exit");
+        console.addIn("clearTable|user");
+        console.addIn("createTable|user|id|13|name|Stiven|password|*****");
+        console.addIn("createTable|user|id|14|name|Eva|password|+++++");
+        console.addIn("find|user");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // clearTable|user
             "Table user has been successfully cleared.\r\n" +
@@ -109,54 +73,54 @@ public class IntegrationTest {
             "|Eva|+++++|14|\r\n" +
             "--------------------\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testCreateWithErrors() {
         // given
-        in.add("createTable|user|error");
-        in.add("exit");
+        console.addIn("createTable|user|error");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // createTable|user|error
             "Failure! because of: Must be an even number of parameters in a format 'createTable|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'createTable|user|error'\r\n" +
             "Please try again.\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testExit() {
         // given
-        in.add("exit");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testFind() {
         // given
-        in.add("find|user");
-        in.add("exit");
+        console.addIn("find|user");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // find|user
             "--------------------\r\n" +
@@ -164,20 +128,20 @@ public class IntegrationTest {
             "--------------------\r\n" +
             "--------------------\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testHelp() {
         // given
-        in.add("help");
-        in.add("exit");
+        console.addIn("help");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // help
             "Existing command:\r\n" +
@@ -194,59 +158,59 @@ public class IntegrationTest {
             "\texit\r\n" +
             "\t\tto exit from the program\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testTables() {
         // given
-        in.add("list");
-        in.add("exit");
+        console.addIn("list");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // list
             "[user, test]\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testUnsupported() {
         // given
-        in.add("unsupported");
-        in.add("exit");
+        console.addIn("unsupported");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // unsupported
             "Nonexistent command: unsupported\r\n" +
             "Enter command (or help for help):\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
     }
 
     @Test
     public void testNonexistentCommand() {
         // given
-        in.add("list");
-        in.add("connectDatabase");
-        in.add("list");
-        in.add("exit");
+        console.addIn("list");
+        console.addIn("connectDatabase");
+        console.addIn("list");
+        console.addIn("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
+        assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
             // list
             "[user, test]\r\n" +
@@ -256,6 +220,14 @@ public class IntegrationTest {
             // list
             "[user, test]\r\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\r\n");
+    }
+
+    private void assertOut(String expected, String... parameters) {
+        String string = expected.replaceAll("\\n", "\r\n");
+        if (parameters.length > 0) {
+            string = string.replaceAll("%s", parameters[0]);
+        }
+        assertOut(string, console.getOut());
     }
 }
