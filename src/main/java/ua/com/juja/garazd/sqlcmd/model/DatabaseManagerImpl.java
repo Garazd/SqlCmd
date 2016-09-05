@@ -21,12 +21,20 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public void createDatabase(String databaseName) {
-        executeUpdate("CREATE DATABASE " + databaseName);
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate("CREATE DATABASE " + databaseName);
+        } catch (SQLException e) {
+            //do nothing
+        }
     }
 
     @Override
     public void dropDatabase(String databaseName) {
-        executeUpdate("DROP DATABASE IF EXISTS " + databaseName);
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate("DROP DATABASE " + databaseName);
+        } catch (SQLException e) {
+            //do nothing
+        }
     }
 
     private void executeUpdate(String sql) {
@@ -42,15 +50,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
-    public void createTable(String tableName, DataSet input) {
+    public void createTable(String query) {
         try (Statement statement = connection.createStatement()) {
-            String tableNames = getNameFormatted(input, "%s,");
-            String values = getValueFormatted(input, "'%s',");
-
-            statement.executeUpdate("INSERT INTO public." + tableName + " (" + tableNames + ")" +
-                "VALUES (" + values + ")");
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + query);
         } catch (SQLException e) {
-            logger.debug("Error in the method createTable " + e);
+            //do nothing
         }
     }
 
@@ -58,6 +62,19 @@ public class DatabaseManagerImpl implements DatabaseManager {
     public void dropTable(String tableName) {
         dropSequence(tableName);
         executeUpdate(String.format("DROP TABLE IF EXISTS public.%s CASCADE", tableName));
+    }
+
+    @Override
+    public void createEntry(String tableName, DataSet input) {
+        try (Statement statement = connection.createStatement()) {
+            String tableNames = getNameFormatted(input, "%s,");
+            String values = getValueFormatted(input, "'%s',");
+
+            statement.executeUpdate("INSERT INTO public." + tableName + " (" + tableNames + ")" +
+                "VALUES (" + values + ")");
+        } catch (SQLException e) {
+            logger.debug("Error in the method createEntry " + e);
+        }
     }
 
     private void dropSequence(String tableName) {
