@@ -1,12 +1,9 @@
 package ua.com.juja.garazd.sqlcmd.controller.command;
 
-import ua.com.juja.garazd.sqlcmd.model.DataSet;
-import ua.com.juja.garazd.sqlcmd.model.DataSetImpl;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class CreateTable implements Command {
-
     private DatabaseManager manager;
     private View view;
 
@@ -14,7 +11,6 @@ public class CreateTable implements Command {
         this.manager = manager;
         this.view = view;
     }
-
     @Override
     public boolean canProcess(String command) {
         return command.startsWith("createTable|");
@@ -23,23 +19,10 @@ public class CreateTable implements Command {
     @Override
     public void process(String command) {
         String[] data = command.split("\\|");
-        if (data.length %2 != 0) {
-            throw new IllegalArgumentException(String.format("Must be an even number of parameters in a format " +
-                "'createTable|tableName|column1|value1|column2|value2|...|columnN|valueN', " +
-                "but you sent: '%s'", command));
+        if (data.length != 2) {
+            throw new IllegalArgumentException("Command format is 'createTable|tableName', and you input: " + command);
         }
-
-        String tableName = data[1];
-
-        DataSet dataSet = new DataSetImpl();
-        for (int index = 1; index < (data.length / 2); index++) {
-            String columnName = data[index*2];
-            String value = data[index*2 + 1];
-
-            dataSet.put(columnName, value);
-        }
-        manager.createTable(tableName, dataSet);
-
-        view.write(String.format("Recording %s was successfully created in the table '%s'.", dataSet, tableName));
+        manager.createTable(data[1]);
+        view.write("Table '" + data[1] + "' created.");
     }
 }
