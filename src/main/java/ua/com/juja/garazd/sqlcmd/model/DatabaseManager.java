@@ -9,13 +9,15 @@ public interface DatabaseManager {
 
     void dropDatabase (String databaseName);
 
-    void createTable(String tableName, DataSet input);
+    void createTable(String query);
 
     void dropTable(String tableName);
 
-    void updateTable(String tableName, int id, DataSetImpl newValue);
+    void createEntry(String tableName, DataSet input);
 
     void clearTable(String tableName);
+
+    void updateTable(String tableName, int id, DataSetImpl newValue);
 
     Set<String> getTableNames();
 
