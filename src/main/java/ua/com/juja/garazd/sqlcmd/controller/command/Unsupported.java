@@ -3,7 +3,6 @@ package ua.com.juja.garazd.sqlcmd.controller.command;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class Unsupported implements Command {
-
     private View view;
 
     public Unsupported(View view) {
