@@ -4,12 +4,11 @@ import java.util.Set;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
-public class Tables implements Command {
-
+public class GetTablesNames implements Command {
     private DatabaseManager manager;
     private View view;
 
-    public Tables(DatabaseManager manager, View view) {
+    public GetTablesNames(DatabaseManager manager, View view) {
         this.manager = manager;
         this.view = view;
     }
