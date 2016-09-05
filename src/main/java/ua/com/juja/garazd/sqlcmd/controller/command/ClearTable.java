@@ -4,7 +4,6 @@ import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class ClearTable implements Command {
-
     private DatabaseManager manager;
     private View view;
 
@@ -22,7 +21,7 @@ public class ClearTable implements Command {
     public void process(String command) {
         String[] data = command.split("\\|");
         if (data.length != 2) {
-            throw new IllegalArgumentException("command format is 'clearTable|tableName', and you have brought: " + command);
+            throw new IllegalArgumentException("Command format is 'clearTable|tableName', and you input: " + command);
         }
         manager.clearTable(data[1]);
 
