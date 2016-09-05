@@ -6,12 +6,11 @@ import ua.com.juja.garazd.sqlcmd.model.DataSet;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
-public class Find implements Command {
-
+public class GetTableData implements Command {
     private DatabaseManager manager;
     private View view;
 
-    public Find(DatabaseManager manager, View view) {
+    public GetTableData(DatabaseManager manager, View view) {
         this.manager = manager;
         this.view = view;
     }
