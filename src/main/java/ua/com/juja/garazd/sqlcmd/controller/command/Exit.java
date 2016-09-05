@@ -3,7 +3,6 @@ package ua.com.juja.garazd.sqlcmd.controller.command;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class Exit implements Command {
-
     private View view;
 
     public Exit(View view) {
