@@ -21,9 +21,7 @@ public class CreateDatabase implements Command {
     public void process(String command) {
         String[] data = command.split("\\|");
         if (data.length != 2) {
-            throw new IllegalArgumentException(String.format("Must be an even number of parameters in a format " +
-                "'createEntry|tableName|column1|value1|column2|value2|...|columnN|valueN', " +
-                "but you sent: '%s'", command));
+            throw new IllegalArgumentException("Command format is 'createDatabase|databaseName', and you input: " + command);
         }
 
         manager.createDatabase(data[1]);
