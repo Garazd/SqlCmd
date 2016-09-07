@@ -1,17 +1,22 @@
 package ua.com.juja.garazd.sqlcmd.controller;
 
+import java.util.Arrays;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.com.juja.garazd.sqlcmd.controller.command.ClearTable;
 import ua.com.juja.garazd.sqlcmd.controller.command.Command;
+import ua.com.juja.garazd.sqlcmd.controller.command.CreateDatabase;
+import ua.com.juja.garazd.sqlcmd.controller.command.CreateEntry;
 import ua.com.juja.garazd.sqlcmd.controller.command.CreateTable;
+import ua.com.juja.garazd.sqlcmd.controller.command.DropDatabase;
+import ua.com.juja.garazd.sqlcmd.controller.command.DropTable;
 import ua.com.juja.garazd.sqlcmd.controller.command.Exit;
 import ua.com.juja.garazd.sqlcmd.controller.command.ExitException;
-import ua.com.juja.garazd.sqlcmd.controller.command.Find;
+import ua.com.juja.garazd.sqlcmd.controller.command.GetTableData;
+import ua.com.juja.garazd.sqlcmd.controller.command.GetTablesNames;
 import ua.com.juja.garazd.sqlcmd.controller.command.Help;
-import ua.com.juja.garazd.sqlcmd.controller.command.Tables;
 import ua.com.juja.garazd.sqlcmd.controller.command.Unsupported;
-import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
@@ -21,60 +26,36 @@ public class MainController {
 
     private DatabaseManager manager;
     private View view;
-    private Command[] commands;
+    private List<Command> commands;
 
     public MainController(DatabaseManager manager, View view) {
         this.manager = manager;
         this.view = view;
-        this.commands = new Command[]{
+
+        commands = Arrays.asList(
             new Help(view),
             new Exit(view),
-            new Tables(manager, view),
-            new ClearTable(manager, view),
+            new CreateDatabase(manager, view),
+            new DropDatabase(manager, view),
             new CreateTable(manager, view),
-            new Find(manager, view),
-            new Unsupported(view)
-        };
+            new DropTable(manager, view),
+            new CreateEntry(manager, view),
+            new ClearTable(manager, view),
+            new GetTablesNames(manager, view),
+            new GetTableData(manager, view),
+            new Unsupported(view));
     }
 
     public void run() {
         try {
-            if (!connectionDatabase()) {
-                return;
-            }
             doWork();
         } catch (ExitException e) {
             logger.debug("Error in the method run " + e);
         }
     }
 
-    private boolean connectionDatabase() {
-        while (!manager.isConnected()) {
-            try {
-                Configuration configuration = new Configuration();
-                String databaseName = configuration.getDatabaseName();
-                String userName = configuration.getUserName();
-                String password = configuration.getPassword();
-                manager.connectDatabase(databaseName, userName, password);
-            } catch (Exception e) {
-                logger.debug("Error in the method connectionDatabase " + e);
-                printError(e);
-            }
-            if (!manager.isConnected()) {
-                view.write("To retry? (y/n):");
-                String input = view.read();
-                if (!input.equalsIgnoreCase("y")) {
-                    view.write("See you later! Bye");
-                    return false;
-                }
-            }
-        }
-        view.write("Connecting to a database is successful");
-        return true;
-    }
-
     private void doWork() {
-        view.write("Enter command (or help for help):");
+        welcomeSQLCmd();
 
         while (true) {
             String input = view.read();
@@ -88,12 +69,20 @@ public class MainController {
                 } catch (Exception e) {
                     if (e instanceof ExitException) {
                         logger.debug("Error in the method doWork " + e);
+                        break;
                     }
                     printError(e);
                     break;
                 }
             }
         }
+    }
+
+    private void welcomeSQLCmd() {
+        view.write("===========================================");
+        view.write("============ Welcome to SQLCmd ============");
+        view.write("===========================================");
+        view.write("To display commands, enter the command help");
     }
 
     private void printError(Exception e) {
