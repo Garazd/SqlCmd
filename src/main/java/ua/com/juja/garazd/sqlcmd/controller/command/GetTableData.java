@@ -17,7 +17,7 @@ public class GetTableData implements Command {
 
     @Override
     public boolean canProcess(String command) {
-        return command.startsWith("find|");
+        return command.startsWith("contents|");
     }
 
     @Override
