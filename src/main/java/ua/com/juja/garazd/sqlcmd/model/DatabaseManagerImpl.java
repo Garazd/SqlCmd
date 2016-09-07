@@ -64,6 +64,10 @@ public class DatabaseManagerImpl implements DatabaseManager {
         executeUpdate(String.format("DROP TABLE IF EXISTS public.%s CASCADE", tableName));
     }
 
+    private void dropSequence(String tableName) {
+        executeUpdate(String.format("DROP SEQUENCE IF EXISTS public.%s_seq CASCADE", tableName));
+    }
+
     @Override
     public void createEntry(String tableName, DataSet input) {
         try (Statement statement = connection.createStatement()) {
@@ -75,10 +79,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (SQLException e) {
             logger.debug("Error in the method createEntry " + e);
         }
-    }
-
-    private void dropSequence(String tableName) {
-        executeUpdate(String.format("DROP SEQUENCE IF EXISTS public.%s_seq CASCADE", tableName));
     }
 
     @Override
