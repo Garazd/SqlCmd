@@ -15,7 +15,7 @@ public class GetTablesNames implements Command {
 
     @Override
     public boolean canProcess(String command) {
-        return command.equals("list");
+        return command.equals("show");
     }
 
     @Override
