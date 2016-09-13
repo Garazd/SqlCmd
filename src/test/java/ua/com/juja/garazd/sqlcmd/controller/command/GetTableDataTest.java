@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class FindTest {
+public class GetTableDataTest {
 
     private DatabaseManager manager;
     private View view;
@@ -28,7 +28,7 @@ public class FindTest {
     public void setup() {
         manager = mock(DatabaseManager.class);
         view = mock(View.class);
-        command = new Find(manager, view);
+        command = new GetTableData(manager, view);
     }
 
     @Test
