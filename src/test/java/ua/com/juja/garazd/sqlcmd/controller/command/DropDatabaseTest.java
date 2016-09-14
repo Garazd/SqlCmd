@@ -86,11 +86,11 @@ public class DropDatabaseTest {
 
         // when
         try {
-            command.process("dropDatabase|user|qwe");
+            command.process("dropDatabase|user|qwerty");
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("Command format is 'dropDatabase|databaseName', and you input: dropDatabase|user|qwe", e.getMessage());
+            assertEquals("Command format is 'dropDatabase|databaseName', and you input: dropDatabase|user|qwerty", e.getMessage());
         }
     }
 }
