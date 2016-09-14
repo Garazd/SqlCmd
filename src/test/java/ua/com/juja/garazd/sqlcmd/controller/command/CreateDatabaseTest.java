@@ -36,7 +36,6 @@ public class CreateDatabaseTest {
         verify(view).write("Base 'user' created.");
     }
 
-
     @Test
     public void testCanProcessCreateDatabaseParametersString() {
         // given

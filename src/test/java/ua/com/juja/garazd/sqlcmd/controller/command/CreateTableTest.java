@@ -36,7 +36,6 @@ public class CreateTableTest {
         verify(view).write("Table 'user' created.");
     }
 
-
     @Test
     public void testCanProcessCreateTableParametersString() {
         // given
