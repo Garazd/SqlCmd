@@ -7,6 +7,7 @@ import ua.com.juja.garazd.sqlcmd.view.View;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class HelpTest {
 
@@ -52,5 +53,16 @@ public class HelpTest {
 
         // then
         assertFalse(canProcess);
+    }
+
+    @Test
+    public void testViewOutput() {
+        // given
+
+        // when
+        command.process("help");
+
+        // then
+        verify(view).write("Existing command:");
     }
 }
