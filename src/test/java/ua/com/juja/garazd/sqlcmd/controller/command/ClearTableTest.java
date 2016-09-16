@@ -78,7 +78,7 @@ public class ClearTableTest {
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("command format is 'clearTable|tableName', and you have brought: clearTable", e.getMessage());
+            assertEquals("Command format is 'clearTable|tableName', and you input: clearTable", e.getMessage());
         }
     }
     
@@ -91,7 +91,7 @@ public class ClearTableTest {
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("command format is 'clearTable|tableName', and you have brought: clearTable|table|qwe", e.getMessage());
+            assertEquals("Command format is 'clearTable|tableName', and you input: clearTable|table|qwe", e.getMessage());
         }
     }
 }
