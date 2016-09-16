@@ -62,7 +62,7 @@ public class GetTableDataTest {
 
     private void setupTableColumns(String tableName, String... columns) {
         when(manager.getTableColumns(tableName))
-            .thenReturn(new LinkedHashSet<String>(Arrays.asList(columns)));
+            .thenReturn(new LinkedHashSet<>(Arrays.asList(columns)));
     }
 
     private void shouldPrint(String expected) {
@@ -76,7 +76,7 @@ public class GetTableDataTest {
         //given
 
         //when
-        boolean canProcess = command.canProcess("find|user");
+        boolean canProcess = command.canProcess("contents|user");
 
         //then
         assertTrue(canProcess);
@@ -87,7 +87,7 @@ public class GetTableDataTest {
         //given
 
         //when
-        boolean canProcess = command.canProcess("find");
+        boolean canProcess = command.canProcess("contents");
 
         //then
         assertFalse(canProcess);
@@ -110,7 +110,7 @@ public class GetTableDataTest {
         setupTableColumns("user", "id", "name", "password");
 
         when(manager.getTableData("user"))
-            .thenReturn(new ArrayList<DataSet>());
+            .thenReturn(new ArrayList<>());
 
         //when
         command.process("find|user");
