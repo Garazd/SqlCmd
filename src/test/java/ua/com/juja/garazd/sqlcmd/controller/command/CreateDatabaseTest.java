@@ -93,4 +93,15 @@ public class CreateDatabaseTest {
             assertEquals("Command format is 'createDatabase|databaseName', and you input: createDatabase|user|qwe", e.getMessage());
         }
     }
+
+    @Test
+    public void testProcessCommandCreateDatabase() {
+        // given
+
+        // when
+        command.process("createDatabase|user");
+
+        // then
+        verify(view).write("Base 'user' created.");
+    }
 }
