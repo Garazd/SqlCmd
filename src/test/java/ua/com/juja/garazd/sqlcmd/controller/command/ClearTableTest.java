@@ -94,4 +94,15 @@ public class ClearTableTest {
             assertEquals("Command format is 'clearTable|tableName', and you input: clearTable|table|qwe", e.getMessage());
         }
     }
+
+    @Test
+    public void testProcessCommandClearTable() {
+        // given
+
+        // when
+        command.process("clearTable|user");
+
+        // then
+        verify(view).write("Table user has been successfully cleared.");
+    }
 }
