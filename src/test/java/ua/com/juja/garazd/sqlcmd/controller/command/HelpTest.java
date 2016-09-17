@@ -56,7 +56,7 @@ public class HelpTest {
     }
 
     @Test
-    public void testViewOutput() {
+    public void testProcessCommandHelp() {
         // given
 
         // when

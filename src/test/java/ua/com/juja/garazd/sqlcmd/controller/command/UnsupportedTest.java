@@ -55,7 +55,7 @@ public class UnsupportedTest {
     }
 
     @Test
-    public void testViewOutput() {
+    public void testProcessUnsupportedCommand() {
         // given
 
         // when

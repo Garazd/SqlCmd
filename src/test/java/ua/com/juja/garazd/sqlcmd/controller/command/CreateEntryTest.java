@@ -87,7 +87,7 @@ public class CreateEntryTest {
     }
 
     @Test
-    public void testViewOutput() {
+    public void testProcessCreateEntry() {
         // given
 
         // when
