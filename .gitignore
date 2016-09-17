@@ -10,9 +10,11 @@ target/
 # Intellij project files
 *.iml
 .idea/
-*.txt
 
 # Logs
 logs/
 *.log
 *.gz
+
+# TODO list
+/src/TODO.txt
