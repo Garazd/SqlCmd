@@ -1,5 +1,6 @@
 package ua.com.juja.garazd.sqlcmd.controller.command;
 
+import org.junit.Before;
 import org.junit.Test;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -8,12 +9,18 @@ import static org.junit.Assert.fail;
 
 public class ExitTest {
 
-    private FakeView view = new FakeView();
+    private FakeView view;
+    private Command command;
+
+    @Before
+    public void setup() {
+        view = new FakeView();
+        command = new Exit(view);
+    }
 
     @Test
     public void testCanProcessExitString() {
         //given
-        Command command = new Exit(view);
 
         //when
         boolean canProcess = command.canProcess("exit");
@@ -25,7 +32,6 @@ public class ExitTest {
     @Test
     public void testCanProcessQweString() {
         //given
-        Command command = new Exit(view);
 
         //when
         boolean canProcess = command.canProcess("qwe");
@@ -37,7 +43,6 @@ public class ExitTest {
     @Test
     public void testProcessExitCommandThrowsExitException() {
         //given
-        Command command = new Exit(view);
 
         //when
         try {
