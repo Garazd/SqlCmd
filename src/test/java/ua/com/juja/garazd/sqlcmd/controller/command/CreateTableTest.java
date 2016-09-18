@@ -93,4 +93,15 @@ public class CreateTableTest {
             assertEquals("Command format is 'createTable|tableName', and you input: createTable|user|qwe", e.getMessage());
         }
     }
+
+    @Test
+    public void testProcessCommandCreateTable() {
+        // given
+
+        // when
+        command.process("createTable|user");
+
+        // then
+        verify(view).write("Table 'user' created.");
+    }
 }
