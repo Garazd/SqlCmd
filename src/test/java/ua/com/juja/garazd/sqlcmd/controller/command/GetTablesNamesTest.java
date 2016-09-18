@@ -7,6 +7,7 @@ import ua.com.juja.garazd.sqlcmd.view.View;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class GetTablesNamesTest {
 
@@ -52,5 +53,16 @@ public class GetTablesNamesTest {
 
         // then
         assertFalse(canProcess);
+    }
+
+    @Test
+    public void testProcessCommandGetTablesNames() {
+        // given
+
+        // when
+        command.process("show");
+
+        // then
+        verify(view).write("[]");
     }
 }
