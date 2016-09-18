@@ -1,20 +1,28 @@
 package ua.com.juja.garazd.sqlcmd.controller.command;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import ua.com.juja.garazd.sqlcmd.view.View;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class ExitWithMockitoTest {
 
-    private View view = Mockito.mock(View.class);
+    private View view;
+    private Command command;
+
+    @Before
+    public void setup() {
+        view = mock(View.class);
+        command = new Exit(view);
+    }
 
     @Test
     public void testCanProcessExitString() {
         //given
-        Command command = new Exit(view);
 
         //when
         boolean canProcess = command.canProcess("exit");
@@ -26,7 +34,6 @@ public class ExitWithMockitoTest {
     @Test
     public void testCanProcessQweString() {
         //given
-        Command command = new Exit(view);
 
         //when
         boolean canProcess = command.canProcess("qwe");
@@ -38,7 +45,6 @@ public class ExitWithMockitoTest {
     @Test
     public void testProcessExitCommandThrowsExitException() {
         //given
-        Command command = new Exit(view);
 
         //when
         try {
@@ -49,6 +55,6 @@ public class ExitWithMockitoTest {
         }
 
         //then
-        Mockito.verify(view).write("See you later! Bye");
+        verify(view).write("See you later! Bye");
     }
 }
