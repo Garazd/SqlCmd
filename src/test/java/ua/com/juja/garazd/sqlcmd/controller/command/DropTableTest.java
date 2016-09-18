@@ -93,4 +93,15 @@ public class DropTableTest {
             assertEquals("Command format is 'dropTable|tableName', and you input: dropTable|user|qwe", e.getMessage());
         }
     }
+
+    @Test
+    public void testProcessCommandDropTable() {
+        // given
+
+        // when
+        command.process("dropTable|user");
+
+        // then
+        verify(view).write("Table 'user' dropped.");
+    }
 }
