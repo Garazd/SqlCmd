@@ -93,4 +93,15 @@ public class DropDatabaseTest {
             assertEquals("Command format is 'dropDatabase|databaseName', and you input: dropDatabase|user|qwerty", e.getMessage());
         }
     }
+
+    @Test
+    public void testProcessCommandDropDatabase() {
+        // given
+
+        // when
+        command.process("dropDatabase|user");
+
+        // then
+        verify(view).write("Base 'user' dropped.");
+    }
 }
