@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.com.juja.garazd.sqlcmd.controller.command.ClearTable;
 import ua.com.juja.garazd.sqlcmd.controller.command.Command;
+import ua.com.juja.garazd.sqlcmd.controller.command.ConnectDatabase;
 import ua.com.juja.garazd.sqlcmd.controller.command.CreateDatabase;
 import ua.com.juja.garazd.sqlcmd.controller.command.CreateEntry;
 import ua.com.juja.garazd.sqlcmd.controller.command.CreateTable;
@@ -16,7 +17,9 @@ import ua.com.juja.garazd.sqlcmd.controller.command.ExitException;
 import ua.com.juja.garazd.sqlcmd.controller.command.GetTableData;
 import ua.com.juja.garazd.sqlcmd.controller.command.GetTablesNames;
 import ua.com.juja.garazd.sqlcmd.controller.command.Help;
+import ua.com.juja.garazd.sqlcmd.controller.command.IsConnected;
 import ua.com.juja.garazd.sqlcmd.controller.command.Unsupported;
+import ua.com.juja.garazd.sqlcmd.model.DatabaseConnection;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
@@ -25,16 +28,20 @@ public class MainController {
     Logger logger = LogManager.getLogger(MainController.class.getName());
 
     private DatabaseManager manager;
+    private DatabaseConnection connection;
     private View view;
     private List<Command> commands;
 
-    public MainController(DatabaseManager manager, View view) {
+    public MainController(DatabaseConnection connection, DatabaseManager manager, View view) {
+        this.connection = connection;
         this.manager = manager;
         this.view = view;
 
         commands = Arrays.asList(
+            new ConnectDatabase(connection, view),
             new Help(view),
             new Exit(view),
+            new IsConnected(connection, view),
             new CreateDatabase(manager, view),
             new DropDatabase(manager, view),
             new CreateTable(manager, view),
@@ -68,21 +75,22 @@ public class MainController {
                     }
                 } catch (Exception e) {
                     if (e instanceof ExitException) {
-                        logger.debug("Error in the method doWork " + e);
-                        break;
+                        throw e;
                     }
                     printError(e);
                     break;
                 }
             }
+            view.write("Enter a command (or help for assistance):");
         }
     }
 
     private void welcomeSQLCmd() {
-        view.write("===========================================");
-        view.write("============ Welcome to SQLCmd ============");
-        view.write("===========================================");
-        view.write("To display commands, enter the command help");
+        view.write("=======================================================");
+        view.write("================== Welcome to SQLCmd ==================");
+        view.write("=======================================================");
+        view.write("                                                       ");
+        view.write("Please enter the command 'connect' to work with the database");
     }
 
     private void printError(Exception e) {
