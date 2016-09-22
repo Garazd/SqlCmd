@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ua.com.juja.garazd.sqlcmd.controller.command.IsConnected;
 import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
@@ -15,6 +16,7 @@ public class DatabaseConnectionImpl implements DatabaseConnection {
     private static String USER_NAME = configuration.getUserName();
     private static String PASSWORD = configuration.getPassword();
     private static Logger logger = LogManager.getLogger(DatabaseManagerImpl.class.getName());
+    private IsConnected isConnected;
 
     private Connection connection;
     private View view;
@@ -46,25 +48,23 @@ public class DatabaseConnectionImpl implements DatabaseConnection {
 
     @Override
     public void connectDatabase(String databaseName, String userName, String password) {
-        while (!isConnected()) {
-            try {
-                Configuration configuration = new Configuration();
-                databaseName = configuration.getDatabaseName();
-                userName = configuration.getUserName();
-                password = configuration.getPassword();
-                connectDatabase(databaseName, userName, password);
-            } catch (Exception e) {
-                connection = null;
-                logger.debug("Error in the method connectionDatabase " + e);
-                view.write("Please enter the correct values in the file configuration.");
-            }
+        try {
+            Configuration configuration = new Configuration();
+            databaseName = configuration.getDatabaseName();
+            userName = configuration.getUserName();
+            password = configuration.getPassword();
+            isConnected.canProcess("connect");
+        } catch (Exception e) {
+            connection = null;
+            logger.debug("Error in the method connectionDatabase " + e);
+            view.write("Please enter the correct values in the file configuration.");
+        }
 
-            if (!isConnected()) {
-                view.write("To retry? (y/n):");
-                String input = view.read();
-                if (!input.equalsIgnoreCase("y")) {
-                    view.write("See you later! Bye");
-                }
+        if (!isConnected()) {
+            view.write("To retry? (y/n):");
+            String input = view.read();
+            if (!input.equalsIgnoreCase("y")) {
+                view.write("See you later! Bye");
             }
         }
         view.write("Connecting to a database is successful");
