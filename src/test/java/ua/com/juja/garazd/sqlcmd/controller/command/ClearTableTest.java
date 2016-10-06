@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ClearTableTest {
 
@@ -29,6 +30,7 @@ public class ClearTableTest {
         // given
 
         // when
+        when(view.read()).thenReturn("y");
         command.process("clearTable|user");
 
         // then
@@ -103,6 +105,17 @@ public class ClearTableTest {
         command.process("clearTable|user");
 
         // then
-        verify(view).write("Table user has been successfully cleared.");
+        verify(view).write("Delete the data from the table 'user'. Y/N");
+    }
+
+    @Test
+    public void testWithConfirmClear() {
+        // given
+
+        //when
+        when(view.read()).thenReturn("y");
+        command.process("clearTable|user");
+        //then
+        verify(manager).clearTable("user");
     }
 }
