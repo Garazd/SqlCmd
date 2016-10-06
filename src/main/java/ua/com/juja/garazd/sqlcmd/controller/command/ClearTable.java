@@ -23,8 +23,21 @@ public class ClearTable implements Command {
         if (data.length != 2) {
             throw new IllegalArgumentException("Command format is 'clearTable|tableName', and you input: " + command);
         }
-        manager.clearTable(data[1]);
-
-        view.write(String.format("Table %s has been successfully cleared.", data[1]));
+        String clearTableName = data[1];
+        confirmAndClearTable(clearTableName);
+    }
+    
+    private void confirmAndClearTable(String clearTableName) {
+        try {
+            view.write(String.format("Delete the data from the table '%s'. Y/N", clearTableName));
+            if (view.read().equalsIgnoreCase("y")) {
+                manager.clearTable(clearTableName);
+                view.write(String.format("Table %s has been successfully cleared.", clearTableName));
+            } else {
+                view.write("Table data will not removed");
+            }
+        } catch (Exception e) {
+            view.write(String.format("Ошибка удаления таблицы '%s', по причине: %s", clearTableName, e.getMessage()));
+        }
     }
 }
