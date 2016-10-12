@@ -86,11 +86,12 @@ public class MainController {
     }
 
     private void welcomeSQLCmd() {
-        view.write("=======================================================");
-        view.write("================== Welcome to SQLCmd ==================");
-        view.write("=======================================================");
-        view.write("                                                       ");
-        view.write("Please enter the command 'connect' to work with the database");
+        view.write("=================================================================");
+        view.write("======================= Welcome to SQLCmd =======================");
+        view.write("=================================================================");
+        view.write("                                                                 ");
+        view.write("Please specify the connection settings in the configuration file");
+        view.write("and enter the command 'connect' to work with the database");
     }
 
     private void printError(Exception e) {
