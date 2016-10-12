@@ -37,7 +37,7 @@ public class ClearTable implements Command {
                 view.write("Table data will not removed");
             }
         } catch (Exception e) {
-            view.write(String.format("Ошибка удаления таблицы '%s', по причине: %s", clearTableName, e.getMessage()));
+            view.write(String.format("Failed to delete the table '%s', because: %s", clearTableName, e.getMessage()));
         }
     }
 }
