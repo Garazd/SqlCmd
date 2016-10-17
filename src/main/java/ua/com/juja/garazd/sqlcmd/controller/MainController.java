@@ -19,7 +19,6 @@ import ua.com.juja.garazd.sqlcmd.controller.command.GetTablesNames;
 import ua.com.juja.garazd.sqlcmd.controller.command.Help;
 import ua.com.juja.garazd.sqlcmd.controller.command.IsConnected;
 import ua.com.juja.garazd.sqlcmd.controller.command.Unsupported;
-import ua.com.juja.garazd.sqlcmd.model.DatabaseConnection;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
@@ -28,20 +27,18 @@ public class MainController {
     Logger logger = LogManager.getLogger(MainController.class.getName());
 
     private DatabaseManager manager;
-    private DatabaseConnection connection;
     private View view;
     private List<Command> commands;
 
-    public MainController(DatabaseConnection connection, DatabaseManager manager, View view) {
-        this.connection = connection;
+    public MainController(DatabaseManager manager, View view) {
         this.manager = manager;
         this.view = view;
 
         commands = Arrays.asList(
-            new ConnectDatabase(connection, view),
+            new ConnectDatabase(manager, view),
             new Help(view),
             new Exit(view),
-            new IsConnected(connection, view),
+            new IsConnected(manager, view),
             new CreateDatabase(manager, view),
             new DropDatabase(manager, view),
             new CreateTable(manager, view),
