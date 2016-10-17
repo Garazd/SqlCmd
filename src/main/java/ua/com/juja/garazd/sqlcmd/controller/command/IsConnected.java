@@ -1,21 +1,21 @@
 package ua.com.juja.garazd.sqlcmd.controller.command;
 
-import ua.com.juja.garazd.sqlcmd.model.DatabaseConnection;
+import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class IsConnected implements Command {
 
-    private DatabaseConnection connection;
+    private DatabaseManager manager;
     private View view;
 
-    public IsConnected(DatabaseConnection connection, View view) {
-        this.connection = connection;
+    public IsConnected(DatabaseManager manager, View view) {
+        this.manager = manager;
         this.view = view;
     }
 
     @Override
     public boolean canProcess(String command) {
-        return !connection.isConnected();
+        return !manager.isConnected();
     }
 
     @Override

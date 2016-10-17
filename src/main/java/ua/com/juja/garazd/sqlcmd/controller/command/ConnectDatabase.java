@@ -1,17 +1,17 @@
 package ua.com.juja.garazd.sqlcmd.controller.command;
 
 import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
-import ua.com.juja.garazd.sqlcmd.model.DatabaseConnection;
+import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class ConnectDatabase implements Command {
 
     private Configuration configuration = new Configuration();
-    private DatabaseConnection connection;
+    private DatabaseManager manager;
     private View view;
 
-    public ConnectDatabase(DatabaseConnection connection, View view) {
-        this.connection = connection;
+    public ConnectDatabase(DatabaseManager manager, View view) {
+        this.manager = manager;
         this.view = view;
     }
 
@@ -22,7 +22,7 @@ public class ConnectDatabase implements Command {
 
     @Override
     public void process(String command) {
-        connection.connectDatabase(
+        manager.connectDatabase(
             configuration.getDatabaseName(),
             configuration.getUserName(),
             configuration.getPassword());
