@@ -5,6 +5,11 @@ import java.util.Set;
 
 public interface DatabaseManager {
 
+    void connectDatabase(String database, String userName, String password);
+
+    boolean isConnected();
+
+
     void createDatabase (String databaseName);
 
     void dropDatabase (String databaseName);
@@ -18,6 +23,7 @@ public interface DatabaseManager {
     void clearTable(String tableName);
 
     void updateTable(String tableName, int id, DataSetImpl newValue);
+
 
     Set<String> getTableNames();
 
