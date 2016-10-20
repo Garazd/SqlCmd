@@ -1,6 +1,7 @@
 package ua.com.juja.garazd.sqlcmd.model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface DatabaseManager {
@@ -25,9 +26,9 @@ public interface DatabaseManager {
     void updateTable(String tableName, int id, DataSetImpl newValue);
 
 
-    Set<String> getTableNames();
+    List<Map<String, Object>> getTableData(String tableName);
 
-    List<DataSet> getTableData(String tableName);
+    Set<String> getTableNames();
 
     Set<String> getTableColumns(String tableName);
 }
