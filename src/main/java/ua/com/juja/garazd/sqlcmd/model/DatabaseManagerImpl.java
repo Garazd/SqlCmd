@@ -7,9 +7,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +20,6 @@ import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 public class DatabaseManagerImpl implements DatabaseManager {
 
     private static Configuration configuration = new Configuration();
-    private static DatabaseManager manager = new DatabaseManagerImpl();
     private static String USER_NAME = configuration.getUserName();
     private static String PASSWORD = configuration.getPassword();
     private static Logger logger = LogManager.getLogger(DatabaseManagerImpl.class.getName());
@@ -29,7 +30,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             Class.forName(configuration.getClassDriver());
         } catch (ClassNotFoundException e) {
             System.out.println("Please load database driver to project.");
-            logger.debug("Error in the method connectDatabase " + e);
+            logger.debug("Error in the load load database driver to project " + e);
         }
     }
 
@@ -45,7 +46,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             connection = DriverManager.getConnection(databaseUrl, USER_NAME, PASSWORD);
         } catch (Exception e) {
             connection = null;
-            logger.debug("Error in the method connectionDatabase " + e);
+            logger.debug("Error in the method connectionDatabase do not correct values in the file configuration " + e);
             throw new RuntimeException("Please enter the correct values in the file configuration.");
         }
     }
@@ -60,7 +61,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE " + databaseName);
         } catch (SQLException e) {
-            //do nothing
+            logger.debug("Error in the method createDatabase " + e);
         }
     }
 
@@ -69,7 +70,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("DROP DATABASE " + databaseName);
         } catch (SQLException e) {
-            //do nothing
+            logger.debug("Error in the method dropDatabase " + e);
         }
     }
 
@@ -80,7 +81,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             try {
                 throw new SQLException("Error update data in case - %s\n", e);
             } catch (SQLException e1) {
-                e1.printStackTrace();
+                logger.debug("Error in the method executeUpdate " + e);
             }
         }
     }
@@ -90,7 +91,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + query);
         } catch (SQLException e) {
-            //do nothing
+            logger.debug("Error in the method createTable " + e);
         }
     }
 
@@ -164,17 +165,18 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
-    public List<DataSet> getTableData(String tableName) {
-        List<DataSet> result = new LinkedList<>();
+    public List<Map<String, Object>> getTableData(String tableName) {
+        List<Map<String, Object>> result = new LinkedList<>();
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM public." + tableName)) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+
             while (resultSet.next()) {
-                DataSet dataSet = new DataSetImpl();
-                result.add(dataSet);
-                for (int i = 0; i < resultSetMetaData.getColumnCount(); i++) {
-                    dataSet.put(resultSetMetaData.getColumnName(i + 1), resultSet.getObject(i + 1));
+                Map<String, Object> data = new LinkedHashMap<>();
+                for (int index = 1; index <= resultSetMetaData.getColumnCount(); index++) {
+                    data.put(resultSetMetaData.getColumnName(index), resultSet.getObject(index));
                 }
+                result.add(data);
             }
             return result;
         } catch (SQLException e) {
