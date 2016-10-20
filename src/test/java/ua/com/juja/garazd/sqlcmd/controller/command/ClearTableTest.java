@@ -26,20 +26,6 @@ public class ClearTableTest {
     }
 
     @Test
-    public void testClearTable() {
-        // given
-
-        // when
-        when(view.read()).thenReturn("y");
-        command.process("clearTable|user");
-
-        // then
-        verify(manager).clearTable("user");
-        verify(view).write("Table user has been successfully cleared.");
-    }
-
-
-    @Test
     public void testCanProcessClearWithParametersString() {
         // given
 
@@ -62,11 +48,11 @@ public class ClearTableTest {
     }
 
     @Test
-    public void testCanProcessQweString() {
+    public void testCanProcessSomeString() {
         // given
 
         // when
-        boolean canProcess = command.canProcess("qwe|user");
+        boolean canProcess = command.canProcess("some");
 
         // then
         assertFalse(canProcess);
@@ -83,17 +69,17 @@ public class ClearTableTest {
             assertEquals("Command format is 'clearTable|tableName', and you input: clearTable", e.getMessage());
         }
     }
-    
+
     @Test
     public void testValidationErrorWhenCountParametersMoreThenTwo() {
 
         // when
         try {
-            command.process("clearTable|table|qwe");
+            command.process("clearTable|table|some");
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("Command format is 'clearTable|tableName', and you input: clearTable|table|qwe", e.getMessage());
+            assertEquals("Command format is 'clearTable|tableName', and you input: clearTable|table|some", e.getMessage());
         }
     }
 
@@ -117,5 +103,18 @@ public class ClearTableTest {
         command.process("clearTable|user");
         //then
         verify(manager).clearTable("user");
+        verify(view).write("Table user has been successfully cleared.");
+    }
+
+    @Test
+    public void testWithNotConfirmClear() {
+        // given
+
+        // when
+        when(view.read()).thenReturn("n");
+        command.process("clearTable|user");
+
+        // then
+        verify(view).write("Table data will not removed");
     }
 }
