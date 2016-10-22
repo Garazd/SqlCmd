@@ -1,7 +1,7 @@
 package ua.com.juja.garazd.sqlcmd.controller.command;
 
-import ua.com.juja.garazd.sqlcmd.model.DataSet;
-import ua.com.juja.garazd.sqlcmd.model.DataSetImpl;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
@@ -30,15 +30,15 @@ public class CreateEntry implements Command {
 
         String tableName = data[1];
 
-        DataSet dataSet = new DataSetImpl();
+        Map<String, Object> tableData = new LinkedHashMap<>();
         for (int index = 1; index < (data.length / 2); index++) {
             String columnName = data[index * 2];
             String value = data[index * 2 + 1];
 
-            dataSet.put(columnName, value);
+            tableData.put(columnName, value);
         }
-        manager.createEntry(tableName, dataSet);
+        manager.createEntry(tableName, tableData);
 
-        view.write(String.format("Recording %s was successfully created in the table '%s'.", dataSet, tableName));
+        view.write(String.format("Recording %s was successfully created in the table '%s'.", tableData, tableName));
     }
 }
