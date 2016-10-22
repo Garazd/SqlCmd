@@ -19,11 +19,11 @@ public interface DatabaseManager {
 
     void dropTable(String tableName);
 
-    void createEntry(String tableName, DataSet input);
+    void createEntry(String tableName, Map<String, Object> input);
 
     void clearTable(String tableName);
 
-    void updateTable(String tableName, int id, DataSetImpl newValue);
+    void updateTable(String tableName, int id, Map<String, Object> newValue);
 
 
     List<Map<String, Object>> getTableData(String tableName);
@@ -31,4 +31,6 @@ public interface DatabaseManager {
     Set<String> getTableNames();
 
     Set<String> getTableColumns(String tableName);
+
+    Set<String> getDatabasesName();
 }
