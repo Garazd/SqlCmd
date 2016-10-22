@@ -2,13 +2,13 @@ package ua.com.juja.garazd.sqlcmd.controller.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import ua.com.juja.garazd.sqlcmd.model.DataSet;
-import ua.com.juja.garazd.sqlcmd.model.DataSetImpl;
-import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -36,12 +36,12 @@ public class GetTableDataTest {
         //given
         setupTableColumns("user", "id", "name", "password");
 
-        DataSet user1 = new DataSetImpl();
+        Map<String, Object> user1 = new LinkedHashMap<>();
         user1.put("id", 12);
         user1.put("name", "Stiven");
         user1.put("password", "*****");
 
-        DataSet user2 = new DataSetImpl();
+        Map<String, Object> user2 = new LinkedHashMap<>();
         user2.put("id", 13);
         user2.put("name", "Eva");
         user2.put("password", "+++++");
@@ -52,12 +52,13 @@ public class GetTableDataTest {
         command.process("find|user");
 
         //then
-        shouldPrint("[--------------------, " +
-                    "|id|name|password|, " +
-                    "--------------------, " +
-                    "|12|Stiven|*****|, " +
-                    "|13|Eva|+++++|, " +
-                    "--------------------]");
+        shouldPrint("[+--+------+--------+\n" +
+                    "|id|name  |password|\n" +
+                    "+--+------+--------+\n" +
+                    "|12|Stiven|*****   |\n" +
+                    "+--+------+--------+\n" +
+                    "|13|Eva   |+++++   |\n" +
+                    "+--+------+--------+]");
     }
 
     private void setupTableColumns(String tableName, String... columns) {
@@ -116,10 +117,9 @@ public class GetTableDataTest {
         command.process("find|user");
 
         //then
-        shouldPrint("[--------------------, " +
-                    "|id|name|password|, " +
-                    "--------------------, " +
-                    "--------------------]");
+        shouldPrint("[+--+----+--------+\n" +
+                    "|id|name|password|\n" +
+                    "+--+----+--------+]");
     }
 
     @Test
@@ -127,10 +127,10 @@ public class GetTableDataTest {
         //given
         setupTableColumns("test", "id");
 
-        DataSet user1 = new DataSetImpl();
+        Map<String, Object> user1 = new LinkedHashMap<>();
         user1.put("id", 12);
 
-        DataSet user2 = new DataSetImpl();
+        Map<String, Object> user2 = new LinkedHashMap<>();
         user2.put("id", 13);
 
         when(manager.getTableData("test")).
@@ -140,11 +140,12 @@ public class GetTableDataTest {
         command.process("find|test");
 
         //then
-        shouldPrint("[--------------------, " +
-            "|id|, " +
-            "--------------------, " +
-            "|12|, " +
-            "|13|, " +
-            "--------------------]");
+        shouldPrint("[+--+\n" +
+                    "|id|\n" +
+                    "+--+\n" +
+                    "|12|\n" +
+                    "+--+\n" +
+                    "|13|\n" +
+                    "+--+]");
     }
 }
