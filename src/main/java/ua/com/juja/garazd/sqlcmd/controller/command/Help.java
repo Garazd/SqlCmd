@@ -21,6 +21,9 @@ public class Help implements Command {
         view.write("\thelp");
         view.write("\t\tto display the commands list on the screen");
 
+        view.write("\tdatabases");
+        view.write("\t\tto display list of databases");
+
         view.write("\tcreateDatabase|databaseName");
         view.write("\t\tto create the database with the name");
 
