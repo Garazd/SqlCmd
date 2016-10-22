@@ -106,11 +106,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
-    public void createEntry(String tableName, DataSet input) {
-        try (Statement statement = connection.createStatement()) {
-            String tableNames = getNameFormatted(input, "%s,");
-            String values = getValueFormatted(input, "'%s',");
+    public void createEntry(String tableName, Map<String, Object> input) {
+        String tableNames = getNameFormatted(input, "%s,");
+        String values = getValueFormatted(input, "'%s',");
 
+        try (Statement statement = connection.createStatement()) {
             statement.executeUpdate("INSERT INTO public." + tableName + " (" + tableNames + ")" +
                 "VALUES (" + values + ")");
         } catch (SQLException e) {
@@ -119,15 +119,14 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
-    public void updateTable(String tableName, int id, DataSetImpl newValue) {
-
+    public void updateTable(String tableName, int id, Map<String, Object> newValue) {
         String tableNames = getNameFormatted(newValue, "%s = ?,");
-        String sql = "UPDATE public." + tableName + " SET " + tableNames +
+        String sqlQuery = "UPDATE public." + tableName + " SET " + tableNames +
             " WHERE id = ?";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
             int index = 1;
-            for (Object value : newValue.getValues()) {
+            for (Object value : newValue.keySet()) {
                 preparedStatement.setObject(index, value);
                 index++;
             }
@@ -150,6 +149,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
     @Override
     public Set<String> getTableNames() {
         Set<String> tables = new LinkedHashSet<>();
+
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery
                  ("SELECT table_name FROM information_schema.tables " +
@@ -167,6 +167,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
     @Override
     public List<Map<String, Object>> getTableData(String tableName) {
         List<Map<String, Object>> result = new LinkedList<>();
+
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT * FROM public." + tableName)) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -185,18 +186,18 @@ public class DatabaseManagerImpl implements DatabaseManager {
         }
     }
 
-    private static String getNameFormatted(DataSet newValue, String format) {
+    private static String getNameFormatted(Map<String, Object> newValue, String format) {
         String string = "";
-        for (String name : newValue.getNames()) {
+        for (String name : newValue.keySet()) {
             string += String.format(format, name);
         }
         string = string.substring(0, string.length() - 1);
         return string;
     }
 
-    private String getValueFormatted(DataSet input, String format) {
+    private String getValueFormatted(Map<String, Object> input, String format) {
         String values = "";
-        for (Object value : input.getValues()) {
+        for (Object value : input.keySet()) {
             values += String.format(format, value);
         }
         values = values.substring(0, values.length() - 1);
@@ -206,6 +207,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
     @Override
     public Set<String> getTableColumns(String tableName) {
         Set<String> tables = new LinkedHashSet<>();
+
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(
                  "SELECT * FROM information_schema.columns " +
@@ -217,6 +219,24 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (SQLException e) {
             logger.debug("Error in the method getTableColumns " + e);
             return tables;
+        }
+    }
+
+    @Override
+    public Set<String> getDatabasesName() {
+        connectDatabase("", USER_NAME, PASSWORD);
+        String sqlQuery = "SELECT datname FROM pg_database WHERE datistemplate = false;";
+        Set<String> result = new LinkedHashSet<>();
+
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sqlQuery)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getString(1));
+            }
+            return result;
+        } catch (SQLException e) {
+            logger.debug("Error in the method getDatabasesNames " + e);
+            return result;
         }
     }
 }
