@@ -5,6 +5,15 @@ import ua.com.juja.garazd.sqlcmd.Main;
 
 public class IntegrationTest {
 
+    private static String DATABASE_NAME = "test";
+    private static String USER_NAME = "admin";
+    private static String PASSWORD = "123456789";
+    private static String TABLE_NAME = "testTable";
+
+    public void setup() {
+        connectionDatabase();
+    }
+
     private ConsoleMock console = new ConsoleMock();
 
     @Test
@@ -48,8 +57,8 @@ public class IntegrationTest {
     public void testClearAndCreateTableData() {
         // given
         console.addIn("clearTable|user");
-        console.addIn("createTable|user|id|13|name|Stiven|password|*****");
-        console.addIn("createTable|user|id|14|name|Eva|password|+++++");
+        console.addIn("createEntry|user|id|13|name|Stiven|password|*****");
+        console.addIn("createEntry|user|id|14|name|Eva|password|+++++");
         console.addIn("find|user");
         console.addIn("exit");
 
@@ -61,9 +70,9 @@ public class IntegrationTest {
             "Enter command (or help for help):\r\n" +
             // clearTable|user
             "Table user has been successfully cleared.\r\n" +
-            // createTable|user|id|13|name|Stiven|password|*****
+            // createEntry|user|id|13|name|Stiven|password|*****
             "Recording {names:[id, name, password], values:[13, Stiven, *****]} was successfully created in the table 'user'.\r\n" +
-            // createTable|user|id|14|name|Eva|password|+++++
+            // createEntry|user|id|14|name|Eva|password|+++++
             "Recording {names:[id, name, password], values:[14, Eva, +++++]} was successfully created in the table 'user'.\r\n" +
             // find|user
             "--------------------\r\n" +
@@ -79,7 +88,7 @@ public class IntegrationTest {
     @Test
     public void testCreateWithErrors() {
         // given
-        console.addIn("createTable|user|error");
+        console.addIn("createEntry|user|error");
         console.addIn("exit");
 
         // when
@@ -88,8 +97,8 @@ public class IntegrationTest {
         // then
         assertOut("Connecting to a database is successful\r\n" +
             "Enter command (or help for help):\r\n" +
-            // createTable|user|error
-            "Failure! because of: Must be an even number of parameters in a format 'createTable|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'createTable|user|error'\r\n" +
+            // createEntry|user|error
+            "Failure! because of: Must be an even number of parameters in a format 'createEntry|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'createEntry|user|error'\r\n" +
             "Please try again.\r\n" +
             // exit
             "See you later! Bye\r\n");
@@ -149,8 +158,8 @@ public class IntegrationTest {
             "\t\tfor a list of all database tables, is connected to\r\n" +
             "\tclearTable|tableName\r\n" +
             "\t\tto clean up the entire table\r\n" +
-            "\tcreateTable|tableName|column1|value1|column2|value2|...|columnN|valueN\r\n" +
-            "\t\tto createTable a record in the table\r\n" +
+            "\tcreateEntry|tableName|column1|value1|column2|value2|...|columnN|valueN\r\n" +
+            "\t\tto createEntry a record in the table\r\n" +
             "\tfind|tableName\r\n" +
             "\t\tto get the contents of the table 'tableName'\r\n" +
             "\thelp\r\n" +
@@ -229,5 +238,11 @@ public class IntegrationTest {
             string = string.replaceAll("%s", parameters[0]);
         }
         assertOut(string, console.getOut());
+    }
+
+    private void connectionDatabase() {
+        console.addIn(DATABASE_NAME);
+        console.addIn(USER_NAME);
+        console.addIn(PASSWORD);
     }
 }
