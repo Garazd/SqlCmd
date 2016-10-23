@@ -48,4 +48,16 @@ public final class Configuration {
     public String getPassword() {
         return properties.getProperty("database.user.password");
     }
+
+    public String getDatabaseNameForTest() {
+        return properties.getProperty("database.test.name");
+    }
+
+    public String getUserNameForTest() {
+        return properties.getProperty("database.test.user.name");
+    }
+
+    public String getPasswordForTest() {
+        return properties.getProperty("database.test.user.password");
+    }
 }
