@@ -14,7 +14,7 @@ import ua.com.juja.garazd.sqlcmd.controller.command.DropDatabase;
 import ua.com.juja.garazd.sqlcmd.controller.command.DropTable;
 import ua.com.juja.garazd.sqlcmd.controller.command.Exit;
 import ua.com.juja.garazd.sqlcmd.controller.command.ExitException;
-import ua.com.juja.garazd.sqlcmd.controller.command.GetDatabasesName;
+import ua.com.juja.garazd.sqlcmd.controller.command.GetDatabasesNames;
 import ua.com.juja.garazd.sqlcmd.controller.command.GetTableData;
 import ua.com.juja.garazd.sqlcmd.controller.command.GetTablesNames;
 import ua.com.juja.garazd.sqlcmd.controller.command.Help;
@@ -48,7 +48,7 @@ public class MainController {
             new ClearTable(manager, view),
             new GetTablesNames(manager, view),
             new GetTableData(manager, view),
-            new GetDatabasesName(manager, view),
+            new GetDatabasesNames(manager, view),
             new Unsupported(view));
     }
 

@@ -3,12 +3,12 @@ package ua.com.juja.garazd.sqlcmd.controller.command;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
-public class GetDatabasesName implements Command {
+public class GetDatabasesNames implements Command {
 
     private final DatabaseManager manager;
     private final View view;
 
-    public GetDatabasesName(DatabaseManager manager, View view) {
+    public GetDatabasesNames(DatabaseManager manager, View view) {
         this.manager = manager;
         this.view = view;
     }
