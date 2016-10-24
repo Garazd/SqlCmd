@@ -1,64 +1,61 @@
 package ua.com.juja.garazd.sqlcmd.model;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
+import ua.com.juja.garazd.sqlcmd.controller.properties.ConfigurationTest;
+import ua.com.juja.garazd.sqlcmd.controller.properties.Support;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DatabaseManagerTest {
 
-    private static Configuration configuration = new Configuration();
-    private static String DATABASE_NAME = configuration.getDatabaseNameForTest();
-    private static String USER_NAME = configuration.getUserNameForTest();
-    private static String PASSWORD = configuration.getPasswordForTest();
-    private static String TABLE_NAME_FIRST = "test_table";
-    private static String CREATE_TABLE = TABLE_NAME_FIRST + " (id SERIAL PRIMARY KEY," +
-        " username VARCHAR (50) UNIQUE NOT NULL," +
-        " password VARCHAR (50) NOT NULL)";
+    private static ConfigurationTest configurationTest = new ConfigurationTest();
+    private static String DATABASE_NAME = configurationTest.getDatabaseNameForTest();
+    private static String USER_NAME = configurationTest.getUserNameForTest();
+    private static String PASSWORD = configurationTest.getPasswordForTest();
+    private static String TEST_TABLE_NAME = "users";
     private static DatabaseManager manager;
-    private static Connection connection;
+    private static Support support;
 
     @BeforeClass
     public static void init() {
         manager = new DatabaseManagerImpl();
-        manager.connectDatabase("", USER_NAME, PASSWORD);
-        manager.dropDatabase(DATABASE_NAME);
-        manager.createDatabase(DATABASE_NAME);
+        support = new Support();
+        support.setupData(manager);
     }
 
     @AfterClass
     public static void clearAfterAllTests() {
-        manager.connectDatabase(DATABASE_NAME, USER_NAME, PASSWORD);
-        manager.dropDatabase(DATABASE_NAME);
+        support.dropData(manager);
     }
 
-    @Before
-    public void setup() {
-        manager.connectDatabase(DATABASE_NAME, USER_NAME, PASSWORD);
-        manager.createTable(CREATE_TABLE);
-    }
-
-    @After
-    public void clear() {
-        manager.dropTable(TABLE_NAME_FIRST);
+    @Test(expected = DatabaseManagerException.class)
+    public void testConnectToDatabaseWhenIncorrectUserAndPassword() {
+        //given
+        //when
+        try {
+            manager.connectDatabase(DATABASE_NAME, "notExistUser", "qwerty");
+            fail();
+        } catch (Exception e) {
+            //then
+            manager.connectDatabase(DATABASE_NAME, USER_NAME, PASSWORD);
+            throw e;
+        }
     }
 
     @Test
     public void testGetAllTableNames() {
         // given
         Set<String> expected = new LinkedHashSet<>();
-        expected.add(TABLE_NAME_FIRST);
+        expected.add(TEST_TABLE_NAME);
 
         // when
         Set<String> tableNames = manager.getTableNames();
@@ -70,14 +67,14 @@ public class DatabaseManagerTest {
     @Test
     public void testGetTableData() {
         //given
-        manager.clearTable(TABLE_NAME_FIRST);
+        manager.clearTable(TEST_TABLE_NAME);
 
         //when
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("name", "Stiven");
         input.put("password", "pass");
         input.put("id", 4);
-        manager.createEntry(TABLE_NAME_FIRST, input);
+        manager.createEntry(TEST_TABLE_NAME, input);
 
         //then
         List<Map<String, Object>> users = new ArrayList<>();
@@ -91,22 +88,22 @@ public class DatabaseManagerTest {
     @Test
     public void testUpdateTableData() {
         //given
-        manager.clearTable(TABLE_NAME_FIRST);
+        manager.clearTable(TEST_TABLE_NAME);
 
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("name", "Stiven");
         input.put("password", "pass");
         input.put("id", 4);
-        manager.createEntry("user", input);
+        manager.createEntry(TEST_TABLE_NAME, input);
 
         //when
         Map<String, Object> newValue = new LinkedHashMap<>();
         newValue.put("password", "pass2");
         newValue.put("name", "Eva");
-        manager.updateTable("user", 4, newValue);
+        manager.updateTable(TEST_TABLE_NAME, 4, newValue);
 
         //then
-        List<Map<String, Object>> users = manager.getTableData(TABLE_NAME_FIRST);
+        List<Map<String, Object>> users = manager.getTableData(TEST_TABLE_NAME);
         assertEquals(1, users.size());
 
         Map<String, Object> user = users.get(0);
@@ -117,13 +114,13 @@ public class DatabaseManagerTest {
     @Test
     public void testGetColumnNames() {
         //given
-        manager.clearTable(TABLE_NAME_FIRST);
+        manager.clearTable(TEST_TABLE_NAME);
 
         //when
-        Set<String> columnNames = manager.getTableColumns(TABLE_NAME_FIRST);
+        Set<String> columnNames = manager.getTableColumns(TEST_TABLE_NAME);
 
         //then
-        assertEquals("[name, password, id]", columnNames.toString());
+        assertEquals("[id, username, password]", columnNames.toString());
     }
 
     @Test
