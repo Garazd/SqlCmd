@@ -33,4 +33,6 @@ public interface DatabaseManager {
     Set<String> getTableColumns(String tableName);
 
     Set<String> getDatabasesName();
+
+    int getTableSize(String tableName);
 }
