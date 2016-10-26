@@ -2,8 +2,6 @@ package ua.com.juja.garazd.sqlcmd.controller.command;
 
 import org.junit.Before;
 import org.junit.Test;
-import ua.com.juja.garazd.sqlcmd.model.DataSet;
-import ua.com.juja.garazd.sqlcmd.model.DataSetImpl;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 import static org.junit.Assert.assertEquals;
@@ -18,14 +16,12 @@ public class CreateEntryTest {
     private DatabaseManager manager;
     private View view;
     private Command command;
-    private DataSet dataSet;
 
     @Before
     public void setup() {
         manager = mock(DatabaseManager.class);
         view = mock(View.class);
         command = new CreateEntry(manager, view);
-        dataSet = mock(DataSetImpl.class);
     }
 
     @Test
@@ -94,6 +90,6 @@ public class CreateEntryTest {
         command.process("createEntry|user");
 
         // then
-        verify(view).write("Recording {names:[], values:[]} was successfully created in the table 'user'.");
+        verify(view).write("Recording {} was successfully created in the table 'user'.");
     }
 }
