@@ -1,7 +1,5 @@
 package ua.com.juja.garazd.sqlcmd.controller.properties;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 
 public class Support {
@@ -35,13 +33,8 @@ public class Support {
     private void createTablesWithData(DatabaseManager manager) {
         manager.createTable("users" +
             " (id SERIAL NOT NULL PRIMARY KEY, name VARCHAR (50) UNIQUE NOT NULL, password VARCHAR (50) NOT NULL)");
-        manager.createTable("test1 (id SERIAL PRIMARY KEY)");
+        manager.createTable("test (id SERIAL PRIMARY KEY)");
         manager.createTable("users2" +
             " (id SERIAL NOT NULL PRIMARY KEY, username varchar(225) NOT NULL UNIQUE, password varchar(225))");
-        Map<String, Object> dataSet = new LinkedHashMap<>();
-        dataSet.put("id", "22");
-        dataSet.put("name", "Vasia");
-        dataSet.put("password", "****");
-        manager.createEntry("users", dataSet);
     }
 }
