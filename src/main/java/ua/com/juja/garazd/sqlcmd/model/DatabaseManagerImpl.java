@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
@@ -108,31 +109,36 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public void createEntry(String tableName, Map<String, Object> input) {
-        String tableNames = getNameFormatted(input, "%s,");
-        String values = getValueFormatted(input, "'%s',");
+        StringJoiner tableNames = new StringJoiner(",");
+        StringJoiner values = new StringJoiner("','", "'", "'");
 
         try (Statement statement = connection.createStatement()) {
-            statement.executeUpdate("INSERT INTO public." + tableName + " (" + tableNames + ")" +
-                "VALUES (" + values + ")");
+            for (Map.Entry<String, Object> entry : input.entrySet()) {
+                tableNames.add(entry.getKey());
+                values.add(entry.getValue().toString());
+            }
+            statement.executeUpdate(String.format("INSERT INTO public.%s (%s)VALUES (%s)", tableName, tableNames, values));
         } catch (SQLException e) {
             logger.debug("Error in the method createEntry " + e);
             throw new DatabaseManagerException("Error in the method createEntry ", e);
         }
     }
 
+
     @Override
     public void updateTable(String tableName, int id, Map<String, Object> newValue) {
-        String tableNames = getNameFormatted(newValue, "%s = ?,");
-        String sqlQuery = "UPDATE public." + tableName + " SET " + tableNames +
-            " WHERE id = ?";
+        StringJoiner tableNames = new StringJoiner(" = ?,", "", " = ?");
+        newValue.entrySet().forEach(x -> tableNames.add(x.getKey()));
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery)) {
+        String sqlUpdate = String.format("UPDATE public.%s SET %s WHERE id = ?", tableName, tableNames);
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate)) {
             int index = 1;
-            for (Object value : newValue.keySet()) {
+            for (Object value : newValue.values()) {
                 preparedStatement.setObject(index, value);
                 index++;
             }
-            preparedStatement.setObject(index, id);
+            preparedStatement.setInt(index, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             logger.debug("Error in the method updateTable " + e);
@@ -190,24 +196,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
         }
     }
 
-    private static String getNameFormatted(Map<String, Object> newValue, String format) {
-        String string = "";
-        for (String name : newValue.keySet()) {
-            string += String.format(format, name);
-        }
-        string = string.substring(0, string.length() - 1);
-        return string;
-    }
-
-    private String getValueFormatted(Map<String, Object> input, String format) {
-        String values = "";
-        for (Object value : input.keySet()) {
-            values += String.format(format, value);
-        }
-        values = values.substring(0, values.length() - 1);
-        return values;
-    }
-
     @Override
     public Set<String> getTableColumns(String tableName) {
         Set<String> tables = new LinkedHashSet<>();
@@ -238,6 +226,18 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 result.add(resultSet.getString(1));
             }
             return result;
+        } catch (SQLException e) {
+            logger.debug("Error in the method getDatabasesNames " + e);
+            throw new DatabaseManagerException("Error in the method getDatabasesNames ", e);
+        }
+    }
+
+    @Override
+    public int getTableSize(String tableName) {
+        try (Statement statement = connection.createStatement();
+             ResultSet tableSize = statement.executeQuery("SELECT COUNT(*) FROM public." + tableName)) {
+            tableSize.next();
+            return tableSize.getInt(1);
         } catch (SQLException e) {
             logger.debug("Error in the method getDatabasesNames " + e);
             throw new DatabaseManagerException("Error in the method getDatabasesNames ", e);
