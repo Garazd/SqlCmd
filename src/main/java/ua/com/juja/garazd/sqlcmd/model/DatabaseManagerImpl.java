@@ -31,6 +31,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (ClassNotFoundException e) {
             System.out.println("Please load database driver to project.");
             logger.debug("Error in the load load database driver to project " + e);
+            throw new DatabaseManagerException("Error in the load load database driver to project ", e);
         }
     }
 
@@ -47,7 +48,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
         } catch (Exception e) {
             connection = null;
             logger.debug("Error in the method connectionDatabase do not correct values in the file configuration " + e);
-            throw new RuntimeException("Please enter the correct values in the file configuration.");
+            throw new DatabaseManagerException("Please enter the correct values in the file configuration.", e);
         }
     }
 
@@ -62,6 +63,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             statement.executeUpdate("CREATE DATABASE " + databaseName);
         } catch (SQLException e) {
             logger.debug("Error in the method createDatabase " + e);
+            throw new DatabaseManagerException("Error in the method createDatabase ", e);
         }
     }
 
@@ -71,6 +73,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             statement.executeUpdate("DROP DATABASE " + databaseName);
         } catch (SQLException e) {
             logger.debug("Error in the method dropDatabase " + e);
+            throw new DatabaseManagerException("Error in the method dropDatabase ", e);
         }
     }
 
@@ -78,11 +81,8 @@ public class DatabaseManagerImpl implements DatabaseManager {
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            try {
-                throw new SQLException("Error update data in case - %s\n", e);
-            } catch (SQLException e1) {
-                logger.debug("Error in the method executeUpdate " + e);
-            }
+            logger.debug("Error in the method executeUpdate " + e);
+            throw new DatabaseManagerException("Error in the method executeUpdate ", e);
         }
     }
 
@@ -92,6 +92,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + query);
         } catch (SQLException e) {
             logger.debug("Error in the method createTable " + e);
+            throw new DatabaseManagerException("Error in the method createTable ", e);
         }
     }
 
@@ -115,6 +116,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
                 "VALUES (" + values + ")");
         } catch (SQLException e) {
             logger.debug("Error in the method createEntry " + e);
+            throw new DatabaseManagerException("Error in the method createEntry ", e);
         }
     }
 
@@ -134,6 +136,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             logger.debug("Error in the method updateTable " + e);
+            throw new DatabaseManagerException("Error in the method updateTable ", e);
         }
     }
 
@@ -143,6 +146,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             statement.executeUpdate("DELETE FROM public." + tableName);
         } catch (SQLException e) {
             logger.debug("Error in the method clearTable " + e);
+            throw new DatabaseManagerException("Error in the method clearTable ", e);
         }
     }
 
@@ -160,7 +164,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             return tables;
         } catch (SQLException e) {
             logger.debug("Error in the method getTableNames " + e);
-            return tables;
+            throw new DatabaseManagerException("Error in the method getTableNames ", e);
         }
     }
 
@@ -182,7 +186,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             return result;
         } catch (SQLException e) {
             logger.debug("Error in the method getTableData " + e);
-            return result;
+            throw new DatabaseManagerException("Error in the method getTableData ", e);
         }
     }
 
@@ -218,7 +222,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             return tables;
         } catch (SQLException e) {
             logger.debug("Error in the method getTableColumns " + e);
-            return tables;
+            throw new DatabaseManagerException("Error in the method getTableColumns ", e);
         }
     }
 
@@ -236,7 +240,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             return result;
         } catch (SQLException e) {
             logger.debug("Error in the method getDatabasesNames " + e);
-            return result;
+            throw new DatabaseManagerException("Error in the method getDatabasesNames ", e);
         }
     }
 }
