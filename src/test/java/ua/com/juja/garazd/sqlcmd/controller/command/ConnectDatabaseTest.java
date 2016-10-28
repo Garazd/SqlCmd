@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,7 +25,7 @@ public class ConnectDatabaseTest {
     @Test
     public void testCanProcessWithParameters() {
         // when
-        boolean canProcess = command.canProcess("connect");
+        boolean canProcess = command.canProcess("connect|sqlcmd|postgres|postgres");
         // then
         assertTrue(canProcess);
     }
@@ -32,9 +33,22 @@ public class ConnectDatabaseTest {
     @Test
     public void testCorrectConnectCommand() {
         //when
-        command.process("connect");
+        command.process("connect|sqlcmd|postgres|postgres");
 
         //then
         verify(view).write("Success!");
+    }
+
+    @Test
+    public void testValidationError() {
+        // when
+        try {
+            command.process("connect|sqlcmd|postgres");
+
+        } catch (IllegalArgumentException e) {
+            // then
+            assertEquals("Invalid number of parameters separated by " +
+                "sign '|', expected connect|databaseName|userName|password, and you input: connect|sqlcmd|postgres", e.getMessage());
+        }
     }
 }
