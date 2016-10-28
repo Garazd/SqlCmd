@@ -39,7 +39,6 @@ public class DatabaseManagerImpl implements DatabaseManager {
     @Override
     public void connectDatabase(String databaseName, String userName, String password) {
         try {
-            Configuration configuration = new Configuration();
             String databaseUrl = String.format("%s%s:%s/%s",
                 configuration.getJdbcDriver(),
                 configuration.getServerName(),
