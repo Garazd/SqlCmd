@@ -20,24 +20,35 @@ public class IntegrationTest {
     private static String DATABASE_NAME = configurationTest.getDatabaseNameForTest();
     private static String USER_NAME = configurationTest.getUserNameForTest();
     private static String PASSWORD = configurationTest.getPasswordForTest();
+    private static String TEST_TABLE = "test";
+    private static String USERS_TABLE = "users";
     private static Support support;
     private static DatabaseManager manager;
     private ConfigurableInputStream in;
     private ByteArrayOutputStream out;
     private String commandConnect = "connect|" + DATABASE_NAME + "|" + USER_NAME + "|" + PASSWORD;
     private String welcomeSQLCmd =
-        "=================================================================\r\n" +
-        "======================= Welcome to SQLCmd =======================\r\n" +
-        "=================================================================\r\n" +
-        "                                                                 \r\n" +
-        "Please specify the connection settings in the configuration file\r\n" +
-        "and enter the command 'connect' to work with the database\r\n";
+        "=================================================================\n" +
+        "======================= Welcome to SQLCmd =======================\n" +
+        "=================================================================\n" +
+        "                                                                 \n" +
+        "Please specify the connection settings in the configuration file\n" +
+        "and enter the command 'connect' to work with the database\n";
 
     @BeforeClass
     public static void buildDatabase() {
         manager = new DatabaseManagerImpl();
         support = new Support();
         support.setupData(manager);
+        manager.createTable(TEST_TABLE +
+            " (id SERIAL NOT NULL PRIMARY KEY, name VARCHAR (50) UNIQUE NOT NULL, password VARCHAR (50) NOT NULL)");
+        manager.createTable(USERS_TABLE +
+            " (id SERIAL NOT NULL PRIMARY KEY, name VARCHAR (50) UNIQUE NOT NULL, password VARCHAR (50) NOT NULL)");
+    }
+
+    @AfterClass
+    public static void dropDatabase() {
+        support.dropData(manager);
     }
 
     @Before
@@ -48,28 +59,27 @@ public class IntegrationTest {
         System.setOut(new PrintStream(out));
     }
 
-    @AfterClass
-    public static void dropDatabase() {
-        support.dropData(manager);
-    }
-    
     @Test
     public void testClear() {
         // given
         in.add(commandConnect);
-        in.add("clearTable|user");
+        in.add("clearTable|users");
+        in.add("Y");
         in.add("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // clearTable|user
-            "Table user has been successfully cleared.\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
+            // clearTable|users
+            "Delete the data from the table 'users'. Y/N\n" +
+            "Table users has been successfully cleared.\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     @Test
@@ -84,67 +94,83 @@ public class IntegrationTest {
 
         // then
         assertEquals(welcomeSQLCmd +
-            "Success!\r\n" +
-            "Enter a command (or help for assistance):\r\n" +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
             // clearTable|sadfasd|fsf|fdsf
-            "Failure! because of: Command format is 'clearTable|tableName', and you input: clearTable|sadfasd|fsf|fdsf\r\n" +
-            "Please try again.\r\n" +
-            "Enter a command (or help for assistance):\r\n" +
+            "Failure! because of: Command format is 'clearTable|tableName', and you input: clearTable|sadfasd|fsf|fdsf\n" +
+            "Please try again.\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     @Test
     public void testClearAndCreateTableData() {
         // given
         in.add(commandConnect);
-        in.add("clearTable|user");
-        in.add("createEntry|user|id|13|name|Stiven|password|*****");
-        in.add("createEntry|user|id|14|name|Eva|password|+++++");
-        in.add("find|user");
+        in.add("clearTable|users");
+        in.add("y");
+        in.add("createEntry|users|id|13|name|Stiven|password|*****");
+        in.add("createEntry|users|id|14|name|Eva|password|+++++");
+        in.add("contents|users");
+        in.add("clearTable|users");
+        in.add("y");
         in.add("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // clearTable|user
-            "Table user has been successfully cleared.\r\n" +
-            // createEntry|user|id|13|name|Stiven|password|*****
-            "Recording {names:[id, name, password], values:[13, Stiven, *****]} was successfully created in the table 'user'.\r\n" +
-            // createEntry|user|id|14|name|Eva|password|+++++
-            "Recording {names:[id, name, password], values:[14, Eva, +++++]} was successfully created in the table 'user'.\r\n" +
-            // find|user
-            "--------------------\r\n" +
-            "|name|password|id|\r\n" +
-            "--------------------\r\n" +
-            "|Stiven|*****|13|\r\n" +
-            "|Eva|+++++|14|\r\n" +
-            "--------------------\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
+            // clearTable|users
+            "Delete the data from the table 'users'. Y/N\n" +
+            "Table users has been successfully cleared.\n" +
+            "Enter a command (or help for assistance):\n" +
+            // createEntry|users|id|13|name|Stiven|password|*****
+            "Recording {id=13, name=Stiven, password=*****} was successfully created in the table 'users'.\n" +
+            "Enter a command (or help for assistance):\n" +
+            // createEntry|users|id|14|name|Eva|password|+++++
+            "Recording {id=14, name=Eva, password=+++++} was successfully created in the table 'users'.\n" +
+            "Enter a command (or help for assistance):\n" +
+            // contents|users
+            "+--+------+--------+\n" +
+            "|id|name  |password|\n" +
+            "+--+------+--------+\n" +
+            "|13|Stiven|*****   |\n" +
+            "+--+------+--------+\n" +
+            "|14|Eva   |+++++   |\n" +
+            "+--+------+--------+\n" +
+            "Enter a command (or help for assistance):\n" +
+            // clearTable|users
+            "Delete the data from the table 'users'. Y/N\n" +
+            "Table users has been successfully cleared.\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     @Test
     public void testCreateWithErrors() {
         // given
         in.add(commandConnect);
-        in.add("createEntry|user|error");
+        in.add("createEntry|users|error");
         in.add("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // createEntry|user|error
-            "Failure! because of: Must be an even number of parameters in a format 'createEntry|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'createEntry|user|error'\r\n" +
-            "Please try again.\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
+            // createEntry|users|error
+            "Failure! because of: Must be an even number of parameters in a format 'createEntry|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'createEntry|users|error'\n" +
+            "Please try again.\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     @Test
@@ -157,32 +183,34 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     @Test
-    public void testFind() {
+    public void testGetTableData() {
         // given
         in.add(commandConnect);
-        in.add("find|user");
+        in.add("contents|users");
         in.add("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // find|user
-            "--------------------\r\n" +
-            "|name|password|id|\r\n" +
-            "--------------------\r\n" +
-            "--------------------\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
+            // contents|users
+            "+--+----+--------+\n" +
+            "|id|name|password|\n" +
+            "+--+----+--------+\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     @Test
@@ -196,43 +224,56 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
             // help
-            "Existing command:\r\n" +
-            "\tlist\r\n" +
-            "\t\tfor a list of all database tables, is connected to\r\n" +
-            "\tclearTable|tableName\r\n" +
-            "\t\tto clean up the entire table\r\n" +
-            "\tcreateEntry|tableName|column1|value1|column2|value2|...|columnN|valueN\r\n" +
-            "\t\tto createEntry a record in the table\r\n" +
-            "\tfind|tableName\r\n" +
-            "\t\tto get the contents of the table 'tableName'\r\n" +
-            "\thelp\r\n" +
-            "\t\tto display the list on the screen\r\n" +
-            "\texit\r\n" +
-            "\t\tto exit from the program\r\n" +
-            // exit
-            "See you later! Bye\r\n", getData());
+            "Existing command:\n" +
+            "\thelp\n" +
+            "\t\tto display the commands list on the screen\n" +
+            "\tdatabases\n" +
+            "\t\tto display list of databases\n" +
+            "\tcreateDatabase|databaseName\n" +
+            "\t\tto create the database with the name\n" +
+            "\tdropDatabase|databaseName\n" +
+            "\t\tto drop the database named\n" +
+            "\tcreateTable|tableName\n" +
+            "\t\tto create the table with the name\n" +
+            "\tdropTable|tableName\n" +
+            "\t\tto drop the table named\n" +
+            "\tcreateEntry|tableName|column1|value1|column2|value2|...|columnN|valueN\n" +
+            "\t\tto create entries in the table\n" +
+            "\tclearTable|tableName\n" +
+            "\t\tto clean up the entries table\n" +
+            "\tshow\n" +
+            "\t\tfor a show of all tables, existing to the database\n" +
+            "\tcontents|tableName\n" +
+            "\t\tto get the contents of the table 'tableName'\n" +
+            "\texit\n" +
+            "\t\tto exit from the program\n" +
+            "Enter a command (or help for assistance):\n" +
+            "See you later! Bye\n", getData());
     }
 
     @Test
     public void testTables() {
         // given
         in.add(commandConnect);
-        in.add("list");
+        in.add("show");
         in.add("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // list
-            "[user, test]\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
+            // show
+            "[test, users, users2]\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     @Test
@@ -246,44 +287,50 @@ public class IntegrationTest {
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
             // unsupported
-            "Nonexistent command: unsupported\r\n" +
-            "Enter command (or help for help):\r\n" +
+            "Command: unsupported does not exist\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     @Test
     public void testNonexistentCommand() {
         // given
         in.add(commandConnect);
-        in.add("list");
+        in.add("show");
         in.add("connectDatabase");
-        in.add("list");
+        in.add("show");
         in.add("exit");
 
         // when
         Main.main(new String[0]);
 
         // then
-        assertEquals("Connecting to a database is successful\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // list
-            "[user, test]\r\n" +
+        assertEquals(welcomeSQLCmd +
+            "Success!\n" +
+            "Enter a command (or help for assistance):\n" +
+            // show
+            "[test, users, users2]\n" +
+            "Enter a command (or help for assistance):\n" +
             // connectDatabase
-            "Nonexistent command: connectDatabase\r\n" +
-            "Enter command (or help for help):\r\n" +
-            // list
-            "[user, test]\r\n" +
+            "Failure! because of: Invalid number of parameters separated by sign '|', " +
+            "expected connect|databaseName|userName|password, and you input: connectDatabase\n" +
+            "Please try again.\n" +
+            "Enter a command (or help for assistance):\n" +
+            // show
+            "[test, users, users2]\n" +
+            "Enter a command (or help for assistance):\n" +
             // exit
-            "See you later! Bye\r\n", getData());
+            "See you later! Bye\n", getData());
     }
 
     public String getData() {
         try {
-            String result = new String(out.toByteArray(), "UTF-8");
+            String result = new String(out.toByteArray(), "UTF-8").replaceAll("\r\n", "\n");
             out.reset();
             return result;
         } catch (UnsupportedEncodingException e) {
