@@ -63,6 +63,5 @@ public class UnsupportedTest {
 
         // then
         verify(view).write("Command: wrongCommand does not exist");
-        verify(view).write("Enter command (or help for help):");
     }
 }
