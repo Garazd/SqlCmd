@@ -10,6 +10,8 @@ public interface DatabaseManager {
 
     boolean isConnected();
 
+    void disconnectDatabase();
+
 
     void createDatabase (String databaseName);
 
