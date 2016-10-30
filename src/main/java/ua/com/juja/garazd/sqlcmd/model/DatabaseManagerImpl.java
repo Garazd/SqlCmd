@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.TreeSet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
@@ -55,6 +56,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
     @Override
     public boolean isConnected() {
         return connection != null;
+    }
+
+    @Override
+    public void disconnectDatabase() {
+        connection = null;
     }
 
     @Override
@@ -157,7 +163,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public Set<String> getTableNames() {
-        Set<String> tables = new LinkedHashSet<>();
+        Set<String> tables = new TreeSet<>();
 
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery
