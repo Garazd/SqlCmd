@@ -10,6 +10,7 @@ import ua.com.juja.garazd.sqlcmd.controller.command.ConnectDatabase;
 import ua.com.juja.garazd.sqlcmd.controller.command.CreateDatabase;
 import ua.com.juja.garazd.sqlcmd.controller.command.CreateEntry;
 import ua.com.juja.garazd.sqlcmd.controller.command.CreateTable;
+import ua.com.juja.garazd.sqlcmd.controller.command.DisconnectDatabase;
 import ua.com.juja.garazd.sqlcmd.controller.command.DropDatabase;
 import ua.com.juja.garazd.sqlcmd.controller.command.DropTable;
 import ua.com.juja.garazd.sqlcmd.controller.command.Exit;
@@ -37,6 +38,7 @@ public class MainController {
 
         commands = Arrays.asList(
             new ConnectDatabase(manager, view),
+            new DisconnectDatabase(manager, view),
             new Help(view),
             new Exit(view),
             new IsConnected(manager, view),
