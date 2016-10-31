@@ -25,7 +25,7 @@ public class IsConnectedTest {
     public void testProcess() {
         command.process("not connected");
         verify(view).write("You can not use the command 'not connected' " +
-            "is until you join using command 'connect'");
+            "is until you join using command 'connect|databaseName|userName|password'");
     }
 
     @Test
