@@ -33,7 +33,7 @@ public class IntegrationTest {
         "=================================================================\n" +
         "                                                                 \n" +
         "Please specify the connection settings in the configuration file\n" +
-        "and enter the command 'connect' to work with the database\n";
+        "and enter the command 'connect|databaseName|userName|password' to work with the database\n";
 
     @BeforeClass
     public static void buildDatabase() {
