@@ -12,7 +12,7 @@ import ua.com.juja.garazd.sqlcmd.controller.properties.Support;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class DatabaseManagerTest {
+public class PostgresDatabaseManagerTest {
 
     private static ConfigurationTest configurationTest = new ConfigurationTest();
     private static String DATABASE_NAME = configurationTest.getDatabaseNameForTest();
@@ -27,7 +27,7 @@ public class DatabaseManagerTest {
 
     @BeforeClass
     public static void init() {
-        manager = new DatabaseManagerImpl();
+        manager = new PostgresDatabaseManager();
         support = new Support();
         support.setupData(manager);
     }
