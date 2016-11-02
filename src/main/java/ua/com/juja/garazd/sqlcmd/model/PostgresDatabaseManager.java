@@ -19,12 +19,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ua.com.juja.garazd.sqlcmd.controller.properties.Configuration;
 
-public class DatabaseManagerImpl implements DatabaseManager {
+public class PostgresDatabaseManager implements DatabaseManager {
 
     private static Configuration configuration = new Configuration();
     private static String USER_NAME = configuration.getUserName();
     private static String PASSWORD = configuration.getPassword();
-    private static Logger logger = LogManager.getLogger(DatabaseManagerImpl.class.getName());
+    private static Logger logger = LogManager.getLogger(PostgresDatabaseManager.class.getName());
     private Connection connection;
 
     static {
