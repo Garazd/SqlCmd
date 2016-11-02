@@ -30,8 +30,8 @@ public class Help implements Command {
         view.write("\tdropDatabase|databaseName");
         view.write("\t\tto drop the database named");
 
-        view.write("\tcreateTable|tableName");
-        view.write("\t\tto create the table with the name");
+        view.write("\tcreateTable|tableName(columnName1 type, columnName2 type,...columnNameN type)");
+        view.write("\t\tto create the table with the name. Type can be text and integer");
 
         view.write("\tdropTable|tableName");
         view.write("\t\tto drop the table named");
