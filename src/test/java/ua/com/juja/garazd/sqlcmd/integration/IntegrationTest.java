@@ -11,7 +11,7 @@ import ua.com.juja.garazd.sqlcmd.Main;
 import ua.com.juja.garazd.sqlcmd.controller.properties.ConfigurationTest;
 import ua.com.juja.garazd.sqlcmd.controller.properties.Support;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
-import ua.com.juja.garazd.sqlcmd.model.DatabaseManagerImpl;
+import ua.com.juja.garazd.sqlcmd.model.PostgresDatabaseManager;
 import static org.junit.Assert.assertEquals;
 
 public class IntegrationTest {
@@ -37,7 +37,7 @@ public class IntegrationTest {
 
     @BeforeClass
     public static void buildDatabase() {
-        manager = new DatabaseManagerImpl();
+        manager = new PostgresDatabaseManager();
         support = new Support();
         support.setupData(manager);
         manager.createTable(TEST_TABLE +
@@ -237,8 +237,8 @@ public class IntegrationTest {
             "\t\tto create the database with the name\n" +
             "\tdropDatabase|databaseName\n" +
             "\t\tto drop the database named\n" +
-            "\tcreateTable|tableName\n" +
-            "\t\tto create the table with the name\n" +
+            "\tcreateTable|tableName(columnName1 type, columnName2 type,...columnNameN type)\n" +
+            "\t\tto create the table with the name. Type can be text and integer\n" +
             "\tdropTable|tableName\n" +
             "\t\tto drop the table named\n" +
             "\tcreateEntry|tableName|column1|value1|column2|value2|...|columnN|valueN\n" +
