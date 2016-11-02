@@ -20,7 +20,8 @@ public class CreateTable implements Command {
     public void process(String command) {
         String[] data = command.split("\\|");
         if (data.length != 2) {
-            throw new IllegalArgumentException("Command format is 'createTable|tableName', and you input: " + command);
+            throw new IllegalArgumentException("Command format is 'createTable|tableName(columnName1 type, " +
+                "columnName2 type,...columnNameN type)', and you input: " + command);
         }
         manager.createTable(data[1]);
         view.write("Table '" + data[1] + "' created.");
