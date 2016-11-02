@@ -77,7 +77,8 @@ public class CreateTableTest {
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("Command format is 'createTable|tableName', and you input: createTable", e.getMessage());
+            assertEquals("Command format is 'createTable|tableName(columnName1 type, " +
+                "columnName2 type,...columnNameN type)', and you input: createTable", e.getMessage());
         }
     }
 
@@ -90,7 +91,8 @@ public class CreateTableTest {
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("Command format is 'createTable|tableName', and you input: createTable|user|qwe", e.getMessage());
+            assertEquals("Command format is 'createTable|tableName(columnName1 type, " +
+                "columnName2 type,...columnNameN type)', and you input: createTable|user|qwe", e.getMessage());
         }
     }
 
