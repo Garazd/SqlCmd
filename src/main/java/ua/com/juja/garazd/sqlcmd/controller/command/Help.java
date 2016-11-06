@@ -19,36 +19,36 @@ public class Help implements Command {
         view.write("Existing command:");
 
         view.write("\thelp");
-        view.write("\t\tto display the commands list on the screen");
+        view.write("\t\tto show all commands");
 
         view.write("\tdatabases");
-        view.write("\t\tto display list of databases");
+        view.write("\t\tto to show all databases");
 
         view.write("\tcreateDatabase|databaseName");
-        view.write("\t\tto create the database with the name");
+        view.write("\t\tto create the database");
 
         view.write("\tdropDatabase|databaseName");
-        view.write("\t\tto drop the database named");
+        view.write("\t\tto drop the database");
 
         view.write("\tcreateTable|tableName(columnName1 type, columnName2 type,...columnNameN type)");
-        view.write("\t\tto create the table with the name. Type can be text and integer");
+        view.write("\t\tto create the table with the name. Type can be text or integer");
 
         view.write("\tdropTable|tableName");
-        view.write("\t\tto drop the table named");
+        view.write("\t\tto drop the table");
 
         view.write("\tcreateEntry|tableName|column1|value1|column2|value2|...|columnN|valueN");
-        view.write("\t\tto create entries in the table");
+        view.write("\t\tto create entries the table");
 
         view.write("\tclearTable|tableName");
-        view.write("\t\tto clean up the entries table");
+        view.write("\t\tto clear the table");
 
         view.write("\tshow");
-        view.write("\t\tfor a show of all tables, existing to the database");
+        view.write("\t\tto show all tables in the database");
 
         view.write("\tcontents|tableName");
-        view.write("\t\tto get the contents of the table 'tableName'");
+        view.write("\t\tto get the contents of the table");
 
         view.write("\texit");
-        view.write("\t\tto exit from the program");
+        view.write("\t\tto exit the program");
     }
 }

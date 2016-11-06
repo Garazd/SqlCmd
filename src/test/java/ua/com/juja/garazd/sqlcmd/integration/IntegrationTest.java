@@ -230,27 +230,27 @@ public class IntegrationTest {
             // help
             "Existing command:\n" +
             "\thelp\n" +
-            "\t\tto display the commands list on the screen\n" +
+            "\t\tto show all commands\n" +
             "\tdatabases\n" +
-            "\t\tto display list of databases\n" +
+            "\t\tto to show all databases\n" +
             "\tcreateDatabase|databaseName\n" +
-            "\t\tto create the database with the name\n" +
+            "\t\tto create the database\n" +
             "\tdropDatabase|databaseName\n" +
-            "\t\tto drop the database named\n" +
+            "\t\tto drop the database\n" +
             "\tcreateTable|tableName(columnName1 type, columnName2 type,...columnNameN type)\n" +
-            "\t\tto create the table with the name. Type can be text and integer\n" +
+            "\t\tto create the table with the name. Type can be text or integer\n" +
             "\tdropTable|tableName\n" +
-            "\t\tto drop the table named\n" +
+            "\t\tto drop the table\n" +
             "\tcreateEntry|tableName|column1|value1|column2|value2|...|columnN|valueN\n" +
-            "\t\tto create entries in the table\n" +
+            "\t\tto create entries the table\n" +
             "\tclearTable|tableName\n" +
-            "\t\tto clean up the entries table\n" +
+            "\t\tto clear the table\n" +
             "\tshow\n" +
-            "\t\tfor a show of all tables, existing to the database\n" +
+            "\t\tto show all tables in the database\n" +
             "\tcontents|tableName\n" +
-            "\t\tto get the contents of the table 'tableName'\n" +
+            "\t\tto get the contents of the table\n" +
             "\texit\n" +
-            "\t\tto exit from the program\n" +
+            "\t\tto exit the program\n" +
             "Enter a command (or help for assistance):\n" +
             "See you later! Bye\n", getData());
     }
