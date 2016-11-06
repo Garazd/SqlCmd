@@ -24,7 +24,7 @@ public class PostgresDatabaseManager implements DatabaseManager {
     private static Configuration configuration = new Configuration();
     private static String USER_NAME = configuration.getUserName();
     private static String PASSWORD = configuration.getPassword();
-    private static Logger logger = LogManager.getLogger(PostgresDatabaseManager.class.getName());
+    private static Logger logger = LogManager.getLogger();
     private Connection connection;
 
     static {

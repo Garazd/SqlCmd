@@ -26,7 +26,7 @@ import ua.com.juja.garazd.sqlcmd.view.View;
 
 public class MainController {
 
-    Logger logger = LogManager.getLogger(MainController.class.getName());
+    private static Logger logger = LogManager.getLogger();
 
     private DatabaseManager manager;
     private View view;
