@@ -21,6 +21,7 @@ import ua.com.juja.garazd.sqlcmd.controller.command.GetTablesNames;
 import ua.com.juja.garazd.sqlcmd.controller.command.Help;
 import ua.com.juja.garazd.sqlcmd.controller.command.IsConnected;
 import ua.com.juja.garazd.sqlcmd.controller.command.Unsupported;
+import ua.com.juja.garazd.sqlcmd.controller.command.UpdateEntry;
 import ua.com.juja.garazd.sqlcmd.model.DatabaseManager;
 import ua.com.juja.garazd.sqlcmd.view.View;
 
@@ -47,6 +48,7 @@ public class MainController {
             new CreateTable(manager, view),
             new DropTable(manager, view),
             new CreateEntry(manager, view),
+            new UpdateEntry(manager, view),
             new ClearTable(manager, view),
             new GetTablesNames(manager, view),
             new GetTableData(manager, view),
