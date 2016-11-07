@@ -65,7 +65,8 @@ public class CreateEntryTest {
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("Must be an even number of parameters in a format 'createEntry|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'createEntry'", e.getMessage());
+            assertEquals("Must be an even number of parameters in a format 'createEntry|tableName|column1|value1|" +
+                "column2|value2|...|columnN|valueN', but you sent: 'createEntry'", e.getMessage());
         }
     }
 
@@ -78,7 +79,8 @@ public class CreateEntryTest {
             fail();
         } catch (IllegalArgumentException e) {
             // then
-            assertEquals("Must be an even number of parameters in a format 'createEntry|tableName|column1|value1|column2|value2|...|columnN|valueN', but you sent: 'createEntry|user|qwe'", e.getMessage());
+            assertEquals("Must be an even number of parameters in a format 'createEntry|tableName|column1|value1|" +
+                "column2|value2|...|columnN|valueN', but you sent: 'createEntry|user|qwe'", e.getMessage());
         }
     }
 
@@ -87,9 +89,9 @@ public class CreateEntryTest {
         // given
 
         // when
-        command.process("createEntry|user");
+        command.process("createEntry|user|id|5|name|Vasya|pass|qwerty");
 
         // then
-        verify(view).write("Recording {} was successfully created in the table 'user'.");
+        verify(view).write("Recording {id=5, name=Vasya, pass=qwerty} was successfully created in the table 'user'.");
     }
 }
