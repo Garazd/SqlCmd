@@ -24,8 +24,8 @@ public class UpdateEntry implements Command {
     public void process(String command) {
         String[] data = command.split("\\|");
         if (data.length % 2 == 0) {
-            throw new IllegalArgumentException(String.format("Must be an even number of parameters in a format " +
-                "'updateEntry|tableName|column1|newValue1|column2|newValue2|...|columnN|newValueN', " +
+            throw new IllegalArgumentException(String.format("Must be an odd number of parameters in a format " +
+                "'updateEntry|tableName|idColumn|columnName1|newValue1|columnName2|newValue2|...|columnNameN|newValueN', " +
                 "but you sent: '%s'", command));
         }
 
@@ -41,6 +41,6 @@ public class UpdateEntry implements Command {
         }
         manager.updateTable(tableName, id, tableData);
 
-        view.write(String.format("Recording %s was successfully updated in the table '%s'.", tableData, tableName));
+        view.write(String.format("Recording %s in the table '%s' successfully updated.", id, tableName));
     }
 }
