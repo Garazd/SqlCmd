@@ -1,4 +1,6 @@
 package ua.com.juja.garazd.sqlcmd.controller.web;
 
-public class MainServlet {
+import javax.servlet.http.HttpServlet;
+
+public class MainServlet extends HttpServlet {
 }
