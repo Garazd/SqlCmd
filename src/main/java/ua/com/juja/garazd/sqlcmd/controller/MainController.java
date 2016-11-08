@@ -93,7 +93,7 @@ public class MainController {
         view.write("======================= Welcome to SQLCmd =======================");
         view.write("=================================================================");
         view.write("                                                                 ");
-        view.write("Please specify the connection settings in the configuration file");
+        view.write("Please specify the connection settings in the configuration file ");
         view.write("and enter the command 'connect|databaseName|userName|password' to work with the database");
     }
 
